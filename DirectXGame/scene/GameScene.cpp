@@ -1,13 +1,16 @@
 #include "GameScene.h"
 #include "ImGuiManager.h"
+#include "PrimitiveDrawer.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete sprite_;
 	delete model_;
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -29,7 +32,17 @@ void GameScene::Initialize() {
 	soundDH_ = audio_->LoadWave("fanfare.wav");
 
 	// サウンド
-	// voiceHandle_ = audio_->PlayWave(soundDH_, true);
+	voiceHandle_ = audio_->PlayWave(soundDH_, true);
+	
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
+
+	// ライン描画の準備
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
+
+	//軸方向表示
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 }
 
 void GameScene::Update() {
@@ -58,6 +71,9 @@ void GameScene::Update() {
 	ImGui::Begin("Debug1");
 	ImGui::ShowDemoWindow();
 	ImGui::End();
+
+	//デバッグカメラ
+	debugCamera_->Update();
 }
 
 void GameScene::Draw() {
@@ -87,7 +103,35 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	// 3Dオブジェクト描画
-	model_->Draw(worldTransform_, viewProjection_, playerGH_);
+	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), playerGH_);
+
+	// グリッド表示
+	for (uint32_t xIndex = 0; xIndex <= 16; ++xIndex) {
+		lineStart.x = xIndex * 2.0f;
+		lineStart.z = 0.0f;
+		lineEnd.x = lineStart.x;
+		lineEnd.z = 16 * 2.0f;
+
+		lineStart.x -= 16;
+		lineStart.z -= 16;
+		lineEnd.x -= 16;
+		lineEnd.z -= 16;
+
+		PrimitiveDrawer::GetInstance()->DrawLine3d(lineStart, lineEnd, {1.0f, 1.0f, 1.0f, 1.0f});
+	}
+	for (uint32_t zIndex = 0; zIndex <= 16; ++zIndex) {
+		lineStart.x = 0.0f;
+		lineStart.z = zIndex * 2.0f;
+		lineEnd.x = 16 * 2.0f;
+		lineEnd.z = lineStart.z;
+
+		lineStart.x -= 16;
+		lineStart.z -= 16;
+		lineEnd.x -= 16;
+		lineEnd.z -= 16;
+
+		PrimitiveDrawer::GetInstance()->DrawLine3d(lineStart, lineEnd, {0.0f, 0.0f, 0.0f, 1.0f});
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -101,7 +145,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	// プレイヤーを描画
-	// sprite_->Draw();
+	sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

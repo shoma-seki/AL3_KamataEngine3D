@@ -7,6 +7,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "DebugCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -62,6 +63,13 @@ private: // メンバ変数
 
 	//imgui
 	float inputFloat3[3] = {0, 0, 0};
+
+	//グリッド表示用
+	Vector3 lineStart{};
+	Vector3 lineEnd{};
+
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
 
 	/// </summary>
 };
