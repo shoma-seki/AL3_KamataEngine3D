@@ -46,5 +46,22 @@ private: // メンバ変数
 
 	/// <summary>
 	/// ゲームシーン用
+	
+	//プレイヤー
+	uint32_t playerGH_ = 0;
+	Sprite* sprite_ = nullptr;
+
+	//3Dモデル
+	Model* model_ = nullptr;
+	WorldTransform worldTransform_;
+	ViewProjection viewProjection_;
+
+	//サウンド
+	uint32_t soundDH_ = 0;
+	uint32_t voiceHandle_ = 0;
+
+	//imgui
+	float inputFloat3[3] = {0, 0, 0};
+
 	/// </summary>
 };
