@@ -117,7 +117,7 @@ void GameScene::Draw() {
 		lineEnd.x -= 16;
 		lineEnd.z -= 16;
 
-		PrimitiveDrawer::GetInstance()->DrawLine3d(lineStart, lineEnd, {1.0f, 1.0f, 1.0f, 1.0f});
+		PrimitiveDrawer::GetInstance()->DrawLine3d(lineStart, lineEnd, {1.0f, 0.0f, 0.0f, 1.0f});
 	}
 	for (uint32_t zIndex = 0; zIndex <= 16; ++zIndex) {
 		lineStart.x = 0.0f;
@@ -130,7 +130,7 @@ void GameScene::Draw() {
 		lineEnd.x -= 16;
 		lineEnd.z -= 16;
 
-		PrimitiveDrawer::GetInstance()->DrawLine3d(lineStart, lineEnd, {0.0f, 0.0f, 0.0f, 1.0f});
+		PrimitiveDrawer::GetInstance()->DrawLine3d(lineStart, lineEnd, {0.0f, 0.0f, 1.0f, 1.0f});
 	}
 
 	// 3Dオブジェクト描画後処理
