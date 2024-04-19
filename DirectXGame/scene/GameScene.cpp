@@ -1,16 +1,23 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { delete model_; }
+GameScene::~GameScene() {
+	delete model_;
+	delete debugCamera_;
+}
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1920, 1040);
 
 	// ワールドトランスフォームとビュープロジェクションの初期化
 	worldTransform_.Initialize();
@@ -22,10 +29,31 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	// プレイヤー生成
 	player_ = new Player();
-	player_->Initialize(model_,playerGH_);
+	player_->Initialize(model_, playerGH_);
+	//軸方向表示
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 }
 
-void GameScene::Update() { player_->Update(); }
+void GameScene::Update() {
+	player_->Update();
+	//デバッグカメラ切り替え
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (isDebugCameraActive_ == true) {
+			isDebugCameraActive_ = false;
+		} else {
+			isDebugCameraActive_ = true;
+		}
+	}
+	if (isDebugCameraActive_) {
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;	
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
+}
 
 void GameScene::Draw() {
 
