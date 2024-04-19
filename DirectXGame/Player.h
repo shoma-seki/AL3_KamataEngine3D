@@ -9,6 +9,7 @@
 #include "MatrixFunc.h"
 #include "ImGuiManager.h"
 #include <algorithm>
+#include "PlayerBullet.h"
 
 class Player {
 public:
@@ -17,7 +18,10 @@ public:
 
 	void Initialize(Model* model, uint32_t GH_);
 	void Update();
+	void Rotate();
 	void Draw(ViewProjection& viewProjection);
+	void DebugDraw();
+	void Attack();
 
 private:
 	WorldTransform worldTransform_;
@@ -32,4 +36,8 @@ private:
 	//移動限界座標
 	const float kMoveLimitX = 33;
 	const float kMoveLimitY = 17;
+	//回転の速さ
+	const float kRotSpeed = 0.02f;
+	//弾
+	PlayerBullet* bullet_ = nullptr;
 };

@@ -49,6 +49,7 @@ public:
 	/// <summary>
 	/// 定数バッファの取得
 	/// </summary>
+	void UpdateMatrix(Vector3 scale, Vector3 rotate, Vector3 translate);
 	/// <returns>定数バッファ</returns>
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetConstBuffer() const { return constBuffer_; }
 
