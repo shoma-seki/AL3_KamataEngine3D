@@ -1,13 +1,15 @@
 #include "GameScene.h"
+#include "AxisIndicator.h"
 #include "TextureManager.h"
 #include <cassert>
-#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
+	delete player_;
+	delete enemy_;
 }
 
 void GameScene::Initialize() {
@@ -25,19 +27,26 @@ void GameScene::Initialize() {
 
 	// 画像の読み込み
 	playerGH_ = TextureManager::Load("Player3-2.png");
+	enemyGH_ = TextureManager::Load("enemy4.png");
 	// モデルの生成
 	model_ = Model::Create();
 	// プレイヤー生成
 	player_ = new Player();
 	player_->Initialize(model_, playerGH_);
-	//軸方向表示
+	// エネミー
+	enemy_ = new Enemy();
+	enemy_->Initialize(model_, enemyGH_);
+	// 軸方向表示
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 }
 
 void GameScene::Update() {
 	player_->Update();
-	//デバッグカメラ切り替え
+	if (enemy_) {
+		enemy_->Update();
+	}
+	// デバッグカメラ切り替え
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (isDebugCameraActive_ == true) {
 			isDebugCameraActive_ = false;
@@ -48,7 +57,7 @@ void GameScene::Update() {
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;	
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
 	} else {
 		viewProjection_.UpdateMatrix();
@@ -82,6 +91,9 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	// プレイヤー
 	player_->Draw(viewProjection_);
+	if (enemy_) {
+		enemy_->Draw(viewProjection_);
+	}
 	/// </summary>
 
 	// 3Dオブジェクト描画後処理
