@@ -1,22 +1,22 @@
 #pragma once
+#include "Functions.h"
+#include "ImGuiManager.h"
 #include "Input.h"
+#include "MatrixFunc.h"
 #include "Model.h"
+#include "PlayerBullet.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include <cassert>
-#include "Functions.h"
-#include "MatrixFunc.h"
-#include "ImGuiManager.h"
 #include <algorithm>
-#include "PlayerBullet.h"
+#include <cassert>
 #include <list>
 
 class Player {
 public:
 	Player() {}
 	~Player() {
-		while(bullets_.back()) {
+		while (bullets_.back() != nullptr) {
 			delete bullets_.back();
 		}
 	}
@@ -32,17 +32,17 @@ private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t playerGH_ = 0u;
-	//キーボード入力
+	// キーボード入力
 	Input* input_ = nullptr;
 
-	//プレイヤー
+	// プレイヤー
 	Vector3 move = {0, 0, 0};
 	const float kCharacterSpeed = 0.2f;
-	//移動限界座標
+	// 移動限界座標
 	const float kMoveLimitX = 33;
 	const float kMoveLimitY = 17;
-	//回転の速さ
+	// 回転の速さ
 	const float kRotSpeed = 0.02f;
-	//弾
+	// 弾
 	std::list<PlayerBullet*> bullets_;
 };
