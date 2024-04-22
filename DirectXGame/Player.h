@@ -10,11 +10,16 @@
 #include "ImGuiManager.h"
 #include <algorithm>
 #include "PlayerBullet.h"
+#include <list>
 
 class Player {
 public:
 	Player() {}
-	~Player() {}
+	~Player() {
+		while(bullets_.back()) {
+			delete bullets_.back();
+		}
+	}
 
 	void Initialize(Model* model, uint32_t GH_);
 	void Update();
@@ -39,5 +44,5 @@ private:
 	//回転の速さ
 	const float kRotSpeed = 0.02f;
 	//弾
-	PlayerBullet* bullet_ = nullptr;
+	std::list<PlayerBullet*> bullets_;
 };

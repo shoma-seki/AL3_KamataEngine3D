@@ -27,8 +27,8 @@ void Player::Update() {
 	// 攻撃
 	Attack();
 	// 弾更新
-	if (bullet_) {
-		bullet_->Update();
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();
 	}
 
 	// 座標移動
@@ -56,8 +56,8 @@ void Player::Rotate() {
 
 void Player::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, playerGH_);
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
 }
 
@@ -75,6 +75,6 @@ void Player::Attack() {
 	if (input_->TriggerKey(DIK_F)) {
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, worldTransform_.translation_);
-		bullet_ = newBullet;
+		bullets_.push_back(newBullet);
 	}
 }
