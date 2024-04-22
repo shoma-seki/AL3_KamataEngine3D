@@ -9,6 +9,14 @@ void Player::Initialize(Model* model, uint32_t GH_) {
 }
 
 void Player::Update() {
+	// デスフラグが立った弾を削除
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 	// 旋回
 	Rotate();
 	// プレイヤー移動
@@ -73,8 +81,12 @@ void Player::DebugDraw() {
 
 void Player::Attack() {
 	if (input_->TriggerKey(DIK_F)) {
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_);
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 		bullets_.push_back(newBullet);
 	}
 }
