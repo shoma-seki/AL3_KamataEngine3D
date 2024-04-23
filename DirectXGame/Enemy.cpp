@@ -7,7 +7,7 @@ void Enemy::Initialize(Model* model, uint32_t GH_) {
 	worldTransform_.Initialize();
 }
 void Enemy::Update() {
-	switch (phase_) {
+	/*switch (phase_) {
 	case Phase::Approach:
 		ApproachPhase();
 		if (translate_.z < 0.0f) {
@@ -19,7 +19,9 @@ void Enemy::Update() {
 		break;
 	default:
 		break;
-	}
+	}*/
+	(this->*phaseFuncTable[static_cast<size_t>(phase_)])();
+
 	ImGui::Begin("Enemy");
 	ImGui::Text("%f  %f  %f", translate_.x, translate_.y, translate_.z);
 	ImGui::End();
@@ -30,6 +32,9 @@ void Enemy::Draw(ViewProjection& viewProjection) { model_->Draw(worldTransform_,
 void Enemy::ApproachPhase() {
 	velocity_ = {0, 0, -0.1f};
 	translate_ = Add(translate_, velocity_);
+	if (translate_.z<0.0f) {
+		phase_ = Phase::Leave;
+	}
 	worldTransform_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, translate_);
 }
 
@@ -38,3 +43,5 @@ void Enemy::LeavePhase() {
 	translate_ = Add(translate_, velocity_);
 	worldTransform_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, translate_);
 }
+
+void (Enemy::*Enemy::phaseFuncTable[])() = {&Enemy::ApproachPhase, &Enemy::LeavePhase};

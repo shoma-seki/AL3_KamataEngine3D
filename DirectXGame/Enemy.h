@@ -32,4 +32,7 @@ private:
 	// エネミー情報
 	Vector3 translate_ = {0, 4, 15};
 	Vector3 velocity_ = {0, 0, 0};
+
+	//メンバ関数ポインタのテーブル
+	static void (Enemy::*phaseFuncTable[])();
 };
