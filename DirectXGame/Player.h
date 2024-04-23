@@ -16,7 +16,7 @@ class Player {
 public:
 	Player() {}
 	~Player() {
-		while (bullets_.back() != nullptr) {
+		while (bullets_.size() != 0) {
 			delete bullets_.back();
 		}
 	}
