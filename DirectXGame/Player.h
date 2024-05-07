@@ -16,8 +16,10 @@ class Player {
 public:
 	Player() {}
 	~Player() {
-		while (bullets_.size() != 0) {
-			delete bullets_.back();
+		for (PlayerBullet* bullet : bullets_) {
+			if (bullet == nullptr) {
+				delete bullet;
+			}
 		}
 	}
 
