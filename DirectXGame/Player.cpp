@@ -5,6 +5,7 @@ void Player::Initialize(Model* model, uint32_t GH_) {
 	model_ = model;
 	playerGH_ = GH_;
 	worldTransform_.Initialize();
+	worldTransform_.translation_ = {-4, 0, 0};
 	input_ = Input::GetInstance();
 }
 

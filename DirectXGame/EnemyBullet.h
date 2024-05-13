@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "Functions.h"
 #include "TextureManager.h"
+#include <math.h>
 
 class EnemyBullet {
 public:
@@ -17,6 +18,8 @@ public:
 private:
 	Vector3 translate{};
 	Vector3 velocity_ = {0, 0, -1};
+	Vector3 scale_ = {1, 1, 1};
+	Vector3 rotate_ = {0, 0, 0};
 	Model* model_;
 	WorldTransform worldTransform{};
 	uint32_t bulletGH_{};

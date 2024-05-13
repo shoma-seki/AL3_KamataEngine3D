@@ -50,7 +50,7 @@ void Enemy::Fire() {
 		EnemyBullet* newBullets = new EnemyBullet();
 		playerWorldPos_ = player_->GetWorldPosition();
 		bulletDirection = Normalize(Subtract(playerWorldPos_, GetWorldPosition()));
-		newBullets->Initialize(model_, translate_, Multiply(1.5f, bulletDirection));
+		newBullets->Initialize(model_, translate_, Multiply(0.7f, bulletDirection));
 		bullets_.emplace_back(newBullets);
 	}
 }
