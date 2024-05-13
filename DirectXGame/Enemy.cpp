@@ -42,12 +42,15 @@ void Enemy::Update() {
 }
 
 void Enemy::Fire() {
+	//assert(player_);
 	// 弾の発射
 	attackInterval--;
 	if (attackInterval <= 0) {
 		attackInterval = kAttackInterval;
 		EnemyBullet* newBullets = new EnemyBullet();
-		newBullets->Initialize(model_, translate_);
+		playerWorldPos_ = player_->GetWorldPosition();
+		bulletDirection = Normalize(Subtract(playerWorldPos_, GetWorldPosition()));
+		newBullets->Initialize(model_, translate_, Multiply(1.5f, bulletDirection));
 		bullets_.emplace_back(newBullets);
 	}
 }
@@ -59,6 +62,15 @@ void Enemy::Draw(ViewProjection& viewProjection) {
 			bullet->Draw(viewProjection);
 		}
 	}
+}
+
+Vector3 Enemy::GetWorldPosition() {
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
 }
 
 void Enemy::ApproachPhase() {

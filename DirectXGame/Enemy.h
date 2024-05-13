@@ -6,6 +6,9 @@
 #include "TextureManager.h"
 #include "WorldTransform.h"
 #include <list>
+#include "Player.h"
+
+class Player;
 
 enum class Phase { Approach, Leave };
 
@@ -24,6 +27,10 @@ public:
 	void Fire();
 	void Draw(ViewProjection& viewProjection);
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	Vector3 GetWorldPosition();
+
 	// フェーズ関数
 	void ApproachPhase();
 	void LeavePhase();
@@ -36,7 +43,7 @@ private:
 	Phase phase_ = Phase::Approach;
 
 	// エネミー情報
-	Vector3 translate_ = {0, 4, 15};
+	Vector3 translate_ = {0, 4, 60};
 	Vector3 velocity_ = {0, 0, 0};
 
 	// メンバ関数ポインタのテーブル
@@ -44,8 +51,13 @@ private:
 
 	// 弾
 	std::list<EnemyBullet*> bullets_;
+	Vector3 bulletDirection = {};
 
 	// 弾の間隔
 	const int32_t kAttackInterval = 30;
 	uint32_t attackInterval = kAttackInterval;
+
+	//プレイヤー
+	Player* player_ = nullptr;
+	Vector3 playerWorldPos_ = {};
 };

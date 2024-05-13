@@ -9,14 +9,14 @@ public:
 	EnemyBullet(){};
 	~EnemyBullet(){};
 
-	void Initialize(Model* model,const Vector3& position);
+	void Initialize(Model* model, const Vector3& position, const Vector3& velocity_);
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 	bool IsDead() const { return isDead_; };
 
 private:
 	Vector3 translate{};
-	Vector3 velocity = {0, 0, -1};
+	Vector3 velocity_ = {0, 0, -1};
 	Model* model_;
 	WorldTransform worldTransform{};
 	uint32_t bulletGH_{};

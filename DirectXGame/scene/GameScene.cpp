@@ -45,6 +45,7 @@ void GameScene::Update() {
 	player_->Update();
 	if (enemy_) {
 		enemy_->Update();
+		enemy_->SetPlayer(player_);
 	}
 	// デバッグカメラ切り替え
 	if (input_->TriggerKey(DIK_SPACE)) {

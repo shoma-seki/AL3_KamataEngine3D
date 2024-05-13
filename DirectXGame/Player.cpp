@@ -82,11 +82,20 @@ void Player::DebugDraw() {
 void Player::Attack() {
 	if (input_->TriggerKey(DIK_F)) {
 		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+		Vector3 velocity_(0, 0, kBulletSpeed);
+		velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
 
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity_);
 		bullets_.push_back(newBullet);
 	}
+}
+
+Vector3 Player::GetWorldPosition() {
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
 }
