@@ -30,10 +30,16 @@ public:
 	void SetPlayer(Player* player) { player_ = player; }
 
 	Vector3 GetWorldPosition();
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+
+	//当たり判定
+	void OnCollision();
 
 	// フェーズ関数
 	void ApproachPhase();
 	void LeavePhase();
+
+	const float kRadius_ = 2;
 
 private:
 	WorldTransform worldTransform_;

@@ -16,6 +16,13 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 	bool IsDead() const { return isDead_; }
 
+	Vector3 GetWorldPosition();
+
+	// 当たり判定
+	void OnCollision();
+
+	const float kRadius_ = 2;
+
 private:
 	WorldTransform worldTransform_{};
 	Model* model_{};

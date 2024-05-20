@@ -63,6 +63,7 @@ void GameScene::Update() {
 	} else {
 		viewProjection_.UpdateMatrix();
 	}
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -112,5 +113,50 @@ void GameScene::Draw() {
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
+#pragma endregion
+}
+
+void GameScene::CheckAllCollisions() {
+	Vector3 posA, posB;
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+
+#pragma region 自キャラと敵弾の当たり判定
+	posA = player_->GetWorldPosition();
+	for (EnemyBullet* bullet : enemyBullets) {
+		posB = bullet->GetWorldPosition();
+		float dis = Length(posA, posB);
+		if (player_->kRadius_ + bullet -> kRadius_ >= dis) {
+			player_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 敵キャラと自弾の当たり判定
+	posA = enemy_->GetWorldPosition();
+	for (PlayerBullet* bullet : playerBullets) {
+		posB = bullet->GetWorldPosition();
+		float dis = Length(posA, posB);
+		if (enemy_->kRadius_ + bullet->kRadius_ >= dis) {
+			enemy_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+
+#pragma region 自弾と敵弾の当たり判定
+	for (EnemyBullet* ebullet : enemyBullets) {
+		for (PlayerBullet* pbullet : playerBullets) {
+			posA = ebullet->GetWorldPosition();
+			posB = pbullet->GetWorldPosition();
+			float dis = Length(posA, posB);
+			if (ebullet->kRadius_ + pbullet->kRadius_ >= dis) {
+				ebullet->OnCollision();
+				pbullet->OnCollision();
+			}
+		}
+	}
 #pragma endregion
 }

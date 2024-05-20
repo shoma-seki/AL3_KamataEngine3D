@@ -73,6 +73,8 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
+void Enemy::OnCollision() {}
+
 void Enemy::ApproachPhase() {
 	velocity_ = {0, 0, -0.1f};
 	translate_ = Add(translate_, velocity_);

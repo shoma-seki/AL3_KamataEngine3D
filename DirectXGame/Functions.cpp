@@ -36,6 +36,15 @@ float Length(const Vector3& v) {
 	return result;
 }
 
+float Length(const Vector3& v1, const Vector3& v2) {
+	float result{};
+	float subX = v1.x - v2.x;
+	float subY = v1.y - v2.y;
+	float subZ = v1.z - v2.z;
+	result = sqrtf((subX * subX) + (subY * subY) + (subZ * subZ));
+	return result;
+}
+
 Vector3 Normalize(const Vector3& v) {
 	Vector3 result{};
 	float length = Length(v);

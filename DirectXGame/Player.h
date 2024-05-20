@@ -30,7 +30,13 @@ public:
 	void DebugDraw();
 	void Attack();
 
+	// 当たり判定
+	void OnCollision();
+
 	Vector3 GetWorldPosition();
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	const float kRadius_ = 2;
 
 private:
 	WorldTransform worldTransform_;
