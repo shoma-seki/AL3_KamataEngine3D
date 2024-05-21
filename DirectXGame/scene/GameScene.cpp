@@ -12,6 +12,7 @@ GameScene::~GameScene() {
 	delete enemy_;
 	delete modelSkydome_;
 	delete skydome_;
+	delete railCamera_;
 }
 
 void GameScene::Initialize() {
@@ -22,6 +23,10 @@ void GameScene::Initialize() {
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1920, 1040);
+
+	// レールカメラ
+	railCamera_ = new RailCamera();
+	railCamera_->Initialize({0, 0, 0}, {0, 0, 0});
 
 	// ワールドトランスフォームとビュープロジェクションの初期化
 	worldTransform_.Initialize();
@@ -37,7 +42,9 @@ void GameScene::Initialize() {
 	skydome_->Initialize(modelSkydome_);
 	// プレイヤー生成
 	player_ = new Player();
-	player_->Initialize(model_, playerGH_);
+	Vector3 playerPosition = {0, 0, 30};
+	player_->Initialize(model_, playerGH_,playerPosition);
+	player_->SetParent(&railCamera_->GetWorldTransform());
 	// エネミー
 	enemy_ = new Enemy();
 	enemy_->Initialize(model_, enemyGH_);
@@ -53,6 +60,7 @@ void GameScene::Update() {
 		enemy_->SetPlayer(player_);
 	}
 	skydome_->Update();
+	railCamera_->Update();
 	// デバッグカメラ切り替え
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (isDebugCameraActive_ == true) {
@@ -67,7 +75,10 @@ void GameScene::Update() {
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
 	} else {
-		viewProjection_.UpdateMatrix();
+		viewProjection_.matView = railCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+		//viewProjection_.UpdateMatrix();
 	}
 	CheckAllCollisions();
 }

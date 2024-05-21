@@ -15,7 +15,7 @@ struct Vector3Array {
 //Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2);
 //Matrix4x4 Subtract(const Matrix4x4& m1, const Matrix4x4& m2);
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
-//Matrix4x4 inverse(const Matrix4x4& matrix);
+Matrix4x4 inverse(const Matrix4x4& matrix);
 //Matrix4x4 Transpose(const Matrix4x4& m);
 //Matrix4x4 MakeIdentityMatrix();
 

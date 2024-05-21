@@ -35,47 +35,47 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-//Matrix4x4 inverse(const Matrix4x4& m) {
-//	Matrix4x4 a = m;
-//	Matrix4x4 result{};
-//
-//	float buf2 = 0.0f;
-//	int n = 4;
-//	int i = 0;
-//	int j = 0;
-//	int k = 0;
-//
-//
-//	for (i = 0; i < n; i++) {
-//		for (j = 0; j < n; j++) {
-//			if (i == j) {
-//				result.m[i][j] = 1.0f;
-//			}
-//			else {
-//				result.m[i][j] = 0.0f;
-//			}
-//		}
-//	}
-//
-//	for (i = 0; i < n; i++) {
-//		buf2 = 1 / a.m[i][i];
-//		for (j = 0; j < n; j++) {
-//			a.m[i][j] *= buf2;
-//			result.m[i][j] *= buf2;
-//		}
-//		for (j = 0; j < n; j++) {
-//			if (i != j) {
-//				buf2 = a.m[j][i];
-//				for (k = 0; k < n; k++) {
-//					a.m[j][k] -= a.m[i][k] * buf2;
-//					result.m[j][k] -= result.m[i][k] * buf2;
-//				}
-//			}
-//		}
-//	}
-//
-//	return result;
-//}
+Matrix4x4 inverse(const Matrix4x4& m) {
+	Matrix4x4 a = m;
+	Matrix4x4 result{};
+
+	float buf2 = 0.0f;
+	int n = 4;
+	int i = 0;
+	int j = 0;
+	int k = 0;
+
+
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			if (i == j) {
+				result.m[i][j] = 1.0f;
+			}
+			else {
+				result.m[i][j] = 0.0f;
+			}
+		}
+	}
+
+	for (i = 0; i < n; i++) {
+		buf2 = 1 / a.m[i][i];
+		for (j = 0; j < n; j++) {
+			a.m[i][j] *= buf2;
+			result.m[i][j] *= buf2;
+		}
+		for (j = 0; j < n; j++) {
+			if (i != j) {
+				buf2 = a.m[j][i];
+				for (k = 0; k < n; k++) {
+					a.m[j][k] -= a.m[i][k] * buf2;
+					result.m[j][k] -= result.m[i][k] * buf2;
+				}
+			}
+		}
+	}
+
+	return result;
+}
 //Matrix4x4 Transpose(const Matrix4x4& m) {
 //	Matrix4x4 result{};
 //

@@ -1,11 +1,11 @@
 #include "Player.h"
 
-void Player::Initialize(Model* model, uint32_t GH_) {
+void Player::Initialize(Model* model, uint32_t GH_, Vector3 position) {
 	assert(model);
 	model_ = model;
 	playerGH_ = GH_;
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {-4, 0, 0};
+	worldTransform_.translation_ = position;
 	input_ = Input::GetInstance();
 }
 
@@ -39,7 +39,6 @@ void Player::Update() {
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();
 	}
-
 	// 座標移動
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	// 座標制限
@@ -87,7 +86,14 @@ void Player::Attack() {
 		velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
 
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity_);
+		newBullet->Initialize(
+		    model_,
+		    {
+		        worldTransform_.matWorld_.m[3][0],
+		        worldTransform_.matWorld_.m[3][1],
+		        worldTransform_.matWorld_.m[3][2],
+		    },
+		    velocity_);
 		bullets_.push_back(newBullet);
 	}
 }

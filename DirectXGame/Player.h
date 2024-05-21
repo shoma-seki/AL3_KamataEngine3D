@@ -23,7 +23,7 @@ public:
 		}
 	}
 
-	void Initialize(Model* model, uint32_t GH_);
+	void Initialize(Model* model, uint32_t GH_,Vector3 position);
 	void Update();
 	void Rotate();
 	void Draw(ViewProjection& viewProjection);
@@ -35,6 +35,8 @@ public:
 
 	Vector3 GetWorldPosition();
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
 	const float kRadius_ = 2;
 
