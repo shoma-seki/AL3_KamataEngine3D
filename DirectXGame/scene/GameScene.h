@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "DebugCamera.h"
 #include "Enemy.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン
@@ -63,8 +64,11 @@ private: // メンバ変数
 	uint32_t enemyGH_ = 0;
 	//モデル
 	Model* model_ = nullptr;
+	Model* modelSkydome_ = nullptr;
 	//プレイヤー
 	Player* player_ = nullptr;
+	//天球
+	Skydome* skydome_ = nullptr;
 	//エネミー
 	Enemy* enemy_ = nullptr;
 	//デバッグカメラ

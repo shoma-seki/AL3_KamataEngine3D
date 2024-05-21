@@ -10,6 +10,8 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete player_;
 	delete enemy_;
+	delete modelSkydome_;
+	delete skydome_;
 }
 
 void GameScene::Initialize() {
@@ -30,6 +32,9 @@ void GameScene::Initialize() {
 	enemyGH_ = TextureManager::Load("enemy4.png");
 	// モデルの生成
 	model_ = Model::Create();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	skydome_ = new Skydome();
+	skydome_->Initialize(modelSkydome_);
 	// プレイヤー生成
 	player_ = new Player();
 	player_->Initialize(model_, playerGH_);
@@ -47,6 +52,7 @@ void GameScene::Update() {
 		enemy_->Update();
 		enemy_->SetPlayer(player_);
 	}
+	skydome_->Update();
 	// デバッグカメラ切り替え
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (isDebugCameraActive_ == true) {
@@ -96,6 +102,7 @@ void GameScene::Draw() {
 	if (enemy_) {
 		enemy_->Draw(viewProjection_);
 	}
+	skydome_->Draw(viewProjection_);
 	/// </summary>
 
 	// 3Dオブジェクト描画後処理
@@ -126,7 +133,7 @@ void GameScene::CheckAllCollisions() {
 	for (EnemyBullet* bullet : enemyBullets) {
 		posB = bullet->GetWorldPosition();
 		float dis = Length(posA, posB);
-		if (player_->kRadius_ + bullet -> kRadius_ >= dis) {
+		if (player_->kRadius_ + bullet->kRadius_ >= dis) {
 			player_->OnCollision();
 			bullet->OnCollision();
 		}
@@ -144,7 +151,6 @@ void GameScene::CheckAllCollisions() {
 		}
 	}
 #pragma endregion
-
 
 #pragma region 自弾と敵弾の当たり判定
 	for (EnemyBullet* ebullet : enemyBullets) {
