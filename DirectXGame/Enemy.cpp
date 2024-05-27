@@ -1,13 +1,15 @@
 #include "Enemy.h"
+#include "GameScene.h"
 
-void Enemy::Initialize(Model* model, uint32_t GH_) {
+void Enemy::Initialize(Vector3 position,Model* model, uint32_t GH_) {
 	assert(model);
 	model_ = model;
 	enemyGH_ = GH_;
+	translate_ = position;
 	worldTransform_.Initialize();
 }
 void Enemy::Update() {
-	/*switch (phase_) {
+	switch (phase_) {
 	case Phase::Approach:
 	    ApproachPhase();
 	    if (translate_.z < 0.0f) {
@@ -19,22 +21,22 @@ void Enemy::Update() {
 	    break;
 	default:
 	    break;
-	}*/
+	}
 	(this->*phaseFuncTable[static_cast<size_t>(phase_)])();
 
-	bullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	//bullets_.remove_if([](EnemyBullet* bullet) {
+	//	if (bullet->IsDead()) {
+	//		delete bullet;
+	//		return true;
+	//	}
+	//	return false;
+	//});
 
-	for (EnemyBullet* bullet : bullets_) {
+	/*for (EnemyBullet* bullet : bullets_) {
 		if (bullet) {
 			bullet->Update();
 		}
-	}
+	}*/
 
 	ImGui::Begin("Enemy");
 	ImGui::Text("%f  %f  %f", translate_.x, translate_.y, translate_.z);
@@ -51,17 +53,12 @@ void Enemy::Fire() {
 		playerWorldPos_ = player_->GetWorldPosition();
 		bulletDirection = Normalize(Subtract(playerWorldPos_, GetWorldPosition()));
 		newBullets->Initialize(model_, translate_, Multiply(0.7f, bulletDirection));
-		bullets_.emplace_back(newBullets);
+		gameScene_->AddEnemyBullet(newBullets);
 	}
 }
 
 void Enemy::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, enemyGH_);
-	for (EnemyBullet* bullet : bullets_) {
-		if (bullet) {
-			bullet->Draw(viewProjection);
-		}
-	}
 }
 
 Vector3 Enemy::GetWorldPosition() {

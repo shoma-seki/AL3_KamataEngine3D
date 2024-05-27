@@ -3,36 +3,32 @@
 #include "Functions.h"
 #include "ImGuiManager.h"
 #include "Model.h"
+#include "Player.h"
 #include "TextureManager.h"
 #include "WorldTransform.h"
 #include <list>
-#include "Player.h"
 
 class Player;
+class GameScene;
 
 enum class Phase { Approach, Leave };
 
 class Enemy {
 public:
 	Enemy() {}
-	~Enemy() {
-		for (EnemyBullet* bullet : bullets_) {
-			if (bullet == nullptr) {
-				delete bullet;
-			}
-		}
-	}
-	void Initialize(Model* model, uint32_t GH_);
+	~Enemy() {}
+	void Initialize(Vector3 position, Model* model, uint32_t GH_);
 	void Update();
 	void Fire();
 	void Draw(ViewProjection& viewProjection);
 
 	void SetPlayer(Player* player) { player_ = player; }
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
 	Vector3 GetWorldPosition();
-	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+	// const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
 
-	//当たり判定
+	// 当たり判定
 	void OnCollision();
 
 	// フェーズ関数
@@ -56,14 +52,17 @@ private:
 	static void (Enemy::*phaseFuncTable[])();
 
 	// 弾
-	std::list<EnemyBullet*> bullets_;
+	// std::list<EnemyBullet*> bullets_;
 	Vector3 bulletDirection = {};
 
 	// 弾の間隔
 	const int32_t kAttackInterval = 30;
 	uint32_t attackInterval = kAttackInterval;
 
-	//プレイヤー
+	// プレイヤー
 	Player* player_ = nullptr;
 	Vector3 playerWorldPos_ = {};
+
+	// ゲームシーン
+	GameScene* gameScene_ = nullptr;
 };
