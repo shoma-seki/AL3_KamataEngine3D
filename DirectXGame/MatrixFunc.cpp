@@ -35,6 +35,26 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
+Vector3 Multiply(const Vector3& v, const Matrix4x4& m) { 
+	float x = v.x;
+	float y = v.y;
+	float z = v.z;
+	float w = 1.0f;
+
+	float resultX = m.m[0][0] * x + m.m[0][1] * y + m.m[0][2] * z + m.m[0][3] * w;
+	float resultY = m.m[1][0] * x + m.m[1][1] * y + m.m[1][2] * z + m.m[1][3] * w;
+	float resultZ = m.m[2][0] * x + m.m[2][1] * y + m.m[2][2] * z + m.m[2][3] * w;
+	float resultW = m.m[3][0] * x + m.m[3][1] * y + m.m[3][2] * z + m.m[3][3] * w;
+
+	 if (resultW != 0.0f) {
+		resultX /= resultW;
+		resultY /= resultW;
+		resultZ /= resultW;
+	}
+
+	return {resultX, resultY, resultZ};
+}
+
 Matrix4x4 inverse(const Matrix4x4& m) {
 	Matrix4x4 a = m;
 	Matrix4x4 result{};
@@ -192,21 +212,21 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 	return result;
 }
 
-//Vector3Array Transform(const Vector3Array& vector, const Matrix4x4& m) {
-//	Vector3Array result{};
-//	for (int i = 0; i < 3; i++) {
-//		result.vector3[i] = vector.vector3[0] * m.m[0][i] +
-//			vector.vector3[1] * m.m[1][i] + vector.vector3[2] * m.m[2][i] + m.m[3][i];
-//	}
-//	float w = vector.vector3[0] * m.m[0][3] +
-//		vector.vector3[1] * m.m[1][3] + vector.vector3[2] * m.m[2][3] + m.m[3][3];
-//	assert(w != 0.0f);
-//	for (int i = 0; i < 3; i++) {
-//		result.vector3[i] /= w;
-//	}
-//	return result;
-//}
-//
+Vector3 Transform(const Vector3& vector, const Matrix4x4& m) {
+	Vector3Array result{};
+	for (int i = 0; i < 3; i++) {
+		result.vector3[i] = vector.x * m.m[0][i] +
+			vector.y * m.m[1][i] + vector.z * m.m[2][i] + m.m[3][i];
+	}
+	float w = vector.x * m.m[0][3] +
+		vector.y * m.m[1][3] + vector.z * m.m[2][3] + m.m[3][3];
+	assert(w != 0.0f);
+	for (int i = 0; i < 3; i++) {
+		result.vector3[i] /= w;
+	}
+	return {result.vector3[0], result.vector3[1], result.vector3[2]};
+}
+
 //Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 //	Matrix4x4 result{};
 //
@@ -252,30 +272,30 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 //
 //	return result;
 //}
-//
-//Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
-//	Matrix4x4 result{};
-//
-//	result.m[0][0] = width / 2.0f;
-//	result.m[0][1] = 0.0f;
-//	result.m[0][2] = 0.0f;
-//	result.m[0][3] = 0.0f;
-//	result.m[1][0] = 0.0f;
-//	result.m[1][1] = -(height / 2.0f);
-//	result.m[1][2] = 0.0f;
-//	result.m[1][3] = 0.0f;
-//	result.m[2][0] = 0.0f;
-//	result.m[2][1] = 0.0f;
-//	result.m[2][2] = maxDepth - minDepth;
-//	result.m[2][3] = 0.0f;
-//	result.m[3][0] = left + width / 2.0f;
-//	result.m[3][1] = top + height / 2.0f;
-//	result.m[3][2] = minDepth;
-//	result.m[3][3] = 1.0f;
-//
-//	return result;
-//}
-//
+
+Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
+	Matrix4x4 result{};
+
+	result.m[0][0] = width / 2.0f;
+	result.m[0][1] = 0.0f;
+	result.m[0][2] = 0.0f;
+	result.m[0][3] = 0.0f;
+	result.m[1][0] = 0.0f;
+	result.m[1][1] = -(height / 2.0f);
+	result.m[1][2] = 0.0f;
+	result.m[1][3] = 0.0f;
+	result.m[2][0] = 0.0f;
+	result.m[2][1] = 0.0f;
+	result.m[2][2] = maxDepth - minDepth;
+	result.m[2][3] = 0.0f;
+	result.m[3][0] = left + width / 2.0f;
+	result.m[3][1] = top + height / 2.0f;
+	result.m[3][2] = minDepth;
+	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
 //Vector3Array RenderingPipeline(const Vector3Array& local, const Matrix4x4& worldMatrix, const Camera3dData& camera) {
 //	Vector3Array screen{};
 //	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(camera.viewMatrix, camera.projectionMatrix));

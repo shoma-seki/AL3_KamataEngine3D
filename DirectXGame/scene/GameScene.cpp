@@ -57,12 +57,14 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	LoadEnemyPopData();
+
+	TextureManager::Load("./Resources./Reticle.png");
 }
 
 void GameScene::Update() {
 	UpdateEnemyPopCommands();
 
-	player_->Update();
+	player_->Update(viewProjection_);
 	for (Enemy* enemy : enemy_) {
 		enemy->Update();
 	}
@@ -146,6 +148,7 @@ void GameScene::Draw() {
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
+	player_->DrawUI();
 	/// </summary>
 
 	// スプライト描画後処理

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cassert>
 #include <list>
+#include "WinApp.h"
 
 class Player {
 public:
@@ -21,12 +22,14 @@ public:
 				delete bullet;
 			}
 		}
+		delete sprite2DReticle_;
 	}
 
 	void Initialize(Model* model, uint32_t GH_,Vector3 position);
-	void Update();
+	void Update(const ViewProjection& viewProjection);
 	void Rotate();
 	void Draw(ViewProjection& viewProjection);
+	void DrawUI();
 	void DebugDraw();
 	void Attack();
 
@@ -34,6 +37,7 @@ public:
 	void OnCollision();
 
 	Vector3 GetWorldPosition();
+	Vector3 GetWorld3DReticlePosition();
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
 	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
@@ -57,4 +61,9 @@ private:
 	const float kRotSpeed = 0.02f;
 	// 弾
 	std::list<PlayerBullet*> bullets_;
+	//3Dレティクル用ワールドトランスフォーム
+	WorldTransform worldTransform3DReticle_;
+	Sprite* sprite2DReticle_ = nullptr;
+
+	uint32_t textureReticle;
 };
