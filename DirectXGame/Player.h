@@ -12,6 +12,7 @@
 #include <cassert>
 #include <list>
 #include "WinApp.h"
+#include "Windows.h"
 
 class Player {
 public:

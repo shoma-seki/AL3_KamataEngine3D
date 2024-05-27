@@ -36,6 +36,14 @@ void Player::Update(const ViewProjection& viewProjection) {
 	if (input_->PushKey(DIK_DOWN)) {
 		move.y -= kCharacterSpeed;
 	}
+	move = {0, 0, 0};
+	XINPUT_STATE joyState;
+
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX * kCharacterSpeed;
+		move.y += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed;
+	}
+
 	// 攻撃
 	Attack();
 	// 弾更新
@@ -57,18 +65,46 @@ void Player::Update(const ViewProjection& viewProjection) {
 	offset = Multiply(offset, worldTransform_.matWorld_);
 	offset = Multiply(kDistancePlayerTo3DReticle, Normalize(offset));
 
-	worldTransform3DReticle_.translation_ = Add({0, 0, 10}, GetWorldPosition());
+	//worldTransform3DReticle_.translation_ = Add({0, 0, 10}, GetWorldPosition());
+	worldTransform3DReticle_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, worldTransform3DReticle_.translation_);
+	Vector3 positionReticle = GetWorld3DReticlePosition();
+	Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+	Matrix4x4 matViewProjectionViewport = Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport));
+	positionReticle = Transform(positionReticle, matViewProjectionViewport);
+	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+
+	//POINT mousePosition;
+	//GetCursorPos(&mousePosition);
+	Vector2 spritePosition = sprite2DReticle_->GetPosition();
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		spritePosition.x += float(joyState.Gamepad.sThumbRX) / SHRT_MAX * 5.0f;
+		spritePosition.y -= float(joyState.Gamepad.sThumbRY) / SHRT_MAX * 5.0f;
+		sprite2DReticle_->SetPosition(spritePosition);
+	}
+	/*HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);*/
+	//sprite2DReticle_->SetPosition(spritePosition);
+	Matrix4x4 matVPV = Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport));
+	Matrix4x4 matInverseVPV = inverse(matVPV);
+	Vector3 posNear = Vector3(float(spritePosition.x), float(spritePosition.y), 0);
+	Vector3 posFar = Vector3(float(spritePosition.x), float(spritePosition.y), 1);
+	posNear = Transform(posNear, matInverseVPV);
+	posFar = Transform(posFar, matInverseVPV);
+
+	Vector3 mouseDirection = Subtract(posFar, posNear);
+	mouseDirection = Normalize(mouseDirection);
+
+	const float kDistanceTestObject = 70;
+	worldTransform3DReticle_.translation_ = Add(posNear, Multiply(kDistanceTestObject, mouseDirection));
 	worldTransform3DReticle_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, worldTransform3DReticle_.translation_);
 
-	Vector3 positionReticle = GetWorld3DReticlePosition();
 
-	Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
-
-	Matrix4x4 matViewProjectionViewport = Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport));
-
-	positionReticle = Transform(positionReticle, matViewProjectionViewport);
-
-	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+	ImGui::Begin("Player");
+	ImGui::Text("2DReticle:(%f,%f)", sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y);
+	ImGui::Text("Near:(%+.2f,%+.2f,%+.2f)", posNear.x, posNear.y, posNear.z);
+	ImGui::Text("Far:(%+.2f,%+.2f,%+.2f)", posFar.x, posFar.y, posFar.z);
+	ImGui::Text("3DReticle:(%+.2f,%+.2f,%+.2f)", worldTransform3DReticle_.translation_.x, worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);
+	ImGui::End();
 
 	DebugDraw();
 }
@@ -103,7 +139,32 @@ void Player::DebugDraw() {
 }
 
 void Player::Attack() {
+
 	if (input_->TriggerKey(DIK_F)) {
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
+		velocity_ = Multiply(kBulletSpeed, Normalize(velocity_));
+		velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
+
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(
+		    model_,
+		    {
+		        worldTransform_.matWorld_.m[3][0],
+		        worldTransform_.matWorld_.m[3][1],
+		        worldTransform_.matWorld_.m[3][2],
+		    },
+		    velocity_);
+		bullets_.push_back(newBullet);
+	}
+
+	
+	XINPUT_STATE joyState;
+	if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
+		return;
+	}
+
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
 		velocity_ = Multiply(kBulletSpeed, Normalize(velocity_));
