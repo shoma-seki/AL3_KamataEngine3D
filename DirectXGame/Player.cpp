@@ -73,17 +73,19 @@ void Player::Update(const ViewProjection& viewProjection) {
 	positionReticle = Transform(positionReticle, matViewProjectionViewport);
 	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 
-	//POINT mousePosition;
-	//GetCursorPos(&mousePosition);
-	Vector2 spritePosition = sprite2DReticle_->GetPosition();
-	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-		spritePosition.x += float(joyState.Gamepad.sThumbRX) / SHRT_MAX * 5.0f;
-		spritePosition.y -= float(joyState.Gamepad.sThumbRY) / SHRT_MAX * 5.0f;
-		sprite2DReticle_->SetPosition(spritePosition);
-	}
-	/*HWND hwnd = WinApp::GetInstance()->GetHwnd();
-	ScreenToClient(hwnd, &mousePosition);*/
-	//sprite2DReticle_->SetPosition(spritePosition);
+	POINT mousePosition;
+	GetCursorPos(&mousePosition);
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);
+	Vector2 spritePosition = {float(mousePosition.x), float(mousePosition.y)};
+
+	//Vector2 spritePosition = sprite2DReticle_->GetPosition();
+	//if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+	//	spritePosition.x += float(joyState.Gamepad.sThumbRX) / SHRT_MAX * 5.0f;
+	//	spritePosition.y -= float(joyState.Gamepad.sThumbRY) / SHRT_MAX * 5.0f;
+	//	sprite2DReticle_->SetPosition(spritePosition);
+	//}
+	sprite2DReticle_->SetPosition(spritePosition);
 	Matrix4x4 matVPV = Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport));
 	Matrix4x4 matInverseVPV = inverse(matVPV);
 	Vector3 posNear = Vector3(float(spritePosition.x), float(spritePosition.y), 0);
@@ -121,6 +123,7 @@ void Player::Rotate() {
 
 void Player::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, playerGH_);
+	model_->Draw(worldTransform3DReticle_, viewProjection, playerGH_);
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
@@ -144,7 +147,7 @@ void Player::Attack() {
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
 		velocity_ = Multiply(kBulletSpeed, Normalize(velocity_));
-		velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
+		//velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
 
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(
@@ -168,7 +171,7 @@ void Player::Attack() {
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
 		velocity_ = Multiply(kBulletSpeed, Normalize(velocity_));
-		velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
+		//velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
 
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(

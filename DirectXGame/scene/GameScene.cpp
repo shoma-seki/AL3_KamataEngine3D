@@ -63,6 +63,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	UpdateEnemyPopCommands();
+	railCamera_->Update();
 
 	player_->Update(viewProjection_);
 	for (Enemy* enemy : enemy_) {
@@ -79,7 +80,6 @@ void GameScene::Update() {
 		return false;
 	});
 	skydome_->Update();
-	railCamera_->Update();
 	// デバッグカメラ切り替え
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (isDebugCameraActive_ == true) {
