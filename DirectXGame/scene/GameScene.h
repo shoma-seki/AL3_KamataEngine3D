@@ -8,12 +8,15 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Player.h"
+#include "AnotherPlayer.h"
 #include "DebugCamera.h"
 #include "Enemy.h"
 #include "Skydome.h"
 #include "RailCamera.h"
 #include <sstream>
 #include <string>
+#include "PrimitiveDrawer.h"
+#include "Spring.h"
 
 /// <summary>
 /// ゲームシーン
@@ -87,6 +90,9 @@ private: // メンバ変数
 	Model* modelSkydome_ = nullptr;
 	//プレイヤー
 	Player* player_ = nullptr;
+	AnotherPlayer* anotherPlayer = nullptr;
+	//跳ね返しクラス
+	Spring* spring_ = nullptr;
 	//天球
 	Skydome* skydome_ = nullptr;
 	//エネミー

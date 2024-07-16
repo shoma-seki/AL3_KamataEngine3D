@@ -304,6 +304,12 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 //	return screen;
 //}
 //
+
+//struct Sphere {
+//	Vector3Array center;
+//	float radius;
+//};
+//
 //void DrawSphere(const Sphere& sphere, const Camera3dData& camera, uint32_t color, uint32_t subdivision) {
 //	const uint32_t kSubdivision = subdivision;
 //	const float kLonEvery = float(2.0 * M_PI / kSubdivision);//phi

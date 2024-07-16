@@ -6,13 +6,14 @@
 #include "Model.h"
 #include "PlayerBullet.h"
 #include "Sprite.h"
+#include "Struct.h"
 #include "ViewProjection.h"
+#include "WinApp.h"
+#include "Windows.h"
 #include "WorldTransform.h"
 #include <algorithm>
 #include <cassert>
 #include <list>
-#include "WinApp.h"
-#include "Windows.h"
 
 class Player {
 public:
@@ -26,13 +27,16 @@ public:
 		delete sprite2DReticle_;
 	}
 
-	void Initialize(Model* model, uint32_t GH_,Vector3 position);
+	void Initialize(Model* model, uint32_t GH_, Vector3 position);
 	void Update(const ViewProjection& viewProjection);
 	void Rotate();
 	void Draw(ViewProjection& viewProjection);
 	void DrawUI();
 	void DebugDraw();
 	void Attack();
+	//void SphereDraw();
+
+	void SetDontAttack() { CanAttack_ = false; }
 
 	// 当たり判定
 	void OnCollision();
@@ -44,6 +48,9 @@ public:
 	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
 	const float kRadius_ = 2;
+
+	int bulletTime = 0;
+	bool isBulletOnce = true;
 
 private:
 	WorldTransform worldTransform_;
@@ -62,9 +69,15 @@ private:
 	const float kRotSpeed = 0.02f;
 	// 弾
 	std::list<PlayerBullet*> bullets_;
-	//3Dレティクル用ワールドトランスフォーム
+	// 3Dレティクル用ワールドトランスフォーム
 	WorldTransform worldTransform3DReticle_;
 	Sprite* sprite2DReticle_ = nullptr;
 
 	uint32_t textureReticle;
+
+	//AnotherPlayerにロック
+	bool isLocking_;
+
+	//弾を発射しない
+	bool CanAttack_;
 };

@@ -10,7 +10,7 @@ void RailCamera::Initialize(Vector3 worldPosition, Vector3 radian) {
 
 void RailCamera::Update() {
 	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
-	worldTransform_.rotation_ = Add(worldTransform_.rotation_, {0, 0.001f, 0});
+	worldTransform_.rotation_ = Add(worldTransform_.rotation_, {0, 0, 0});
 	worldTransform_.UpdateMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	viewProjection_.matView = inverse(worldTransform_.matWorld_);
 #ifdef _DEBUG

@@ -19,6 +19,7 @@ GameScene::~GameScene() {
 	for (EnemyBullet* bullet : enemyBullets_) {
 		delete bullet;
 	}
+	delete spring_;
 }
 
 void GameScene::Initialize() {
@@ -51,6 +52,13 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = {0, 0, 30};
 	player_->Initialize(model_, playerGH_, playerPosition);
 	player_->SetParent(&railCamera_->GetWorldTransform());
+	anotherPlayer = new AnotherPlayer();
+	anotherPlayer->Initialize(model_, playerGH_);
+	anotherPlayer->SetPlayer(player_);
+	spring_ = new Spring();
+	spring_->Initialize();
+	spring_->SetPlayer(player_);
+	spring_->SetAnotherPlayer(anotherPlayer);
 
 	// 軸方向表示
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -59,19 +67,27 @@ void GameScene::Initialize() {
 	LoadEnemyPopData();
 
 	TextureManager::Load("./Resources./Reticle.png");
+
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 }
 
 void GameScene::Update() {
-	UpdateEnemyPopCommands();
+	// UpdateEnemyPopCommands();
 	railCamera_->Update();
 
+	// 跳ね返しUpdate
+	spring_->Update();
+
 	player_->Update(viewProjection_);
+	anotherPlayer->Update();
+	spring_->SetPlayerBullet(player_->GetBullets());
 	for (Enemy* enemy : enemy_) {
 		enemy->Update();
 	}
 	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Update();
 	}
+
 	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->IsDead()) {
 			delete bullet;
@@ -81,7 +97,7 @@ void GameScene::Update() {
 	});
 	skydome_->Update();
 	// デバッグカメラ切り替え
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->TriggerKey(DIK_F)) {
 		if (isDebugCameraActive_ == true) {
 			isDebugCameraActive_ = false;
 		} else {
@@ -129,6 +145,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	// プレイヤー
 	player_->Draw(viewProjection_);
+	anotherPlayer->Draw(viewProjection_);
 	for (Enemy* enemy : enemy_) {
 		enemy->Draw(viewProjection_);
 	}
@@ -141,6 +158,8 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
+
+	// player_->SphereDraw();
 
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理

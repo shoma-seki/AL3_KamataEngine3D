@@ -16,6 +16,8 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 	bool IsDead() const { return isDead_; }
 
+	void DirectionInverce() { velocity_ *= -1; }
+
 	Vector3 GetWorldPosition();
 
 	// 当たり判定

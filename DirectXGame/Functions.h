@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Struct.h"
+#include <cmath>
+#include "PrimitiveDrawer.h"
 
 Vector3 Add(const Vector3& v1, const Vector3& v2);
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);
@@ -17,3 +20,8 @@ float Length(const Vector3& v1, const Vector3& v2 );
 Vector3 Normalize(const Vector3& v);
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
+
+bool isCollision(const Sphere& s1, const Sphere& s2);
+bool isCollision(const Sphere& s1, const Vector3& v);
+
+void DrawSphere(const Sphere& sphere, unsigned int subdivision);
