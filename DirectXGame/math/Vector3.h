@@ -32,6 +32,19 @@ struct Vector3 final {
 		z /= s;
 		return *this;
 	}
+	bool operator==(const Vector3& vec) {
+		if (this->x == vec.x && this->y == vec.y && this->z == vec.z) {
+			return true;
+		}
+		return false;
+	}
+
+	bool operator!=(const Vector3& vec) {
+		if (this->x != vec.x || this->y != vec.y || this->z != vec.z) {
+			return true;
+		}
+		return false;
+	}
 
 	Vector3 operator+(const Vector3& v2) {
 		this->x += v2.x;
@@ -47,6 +60,7 @@ struct Vector3 final {
 		this->x *= s;
 		this->y *= s;
 		this->z *= s;
+		return Vector3(this->x, this->y, this->z);
 	}
 	Vector3 operator/(float s) {
 		this->x /= s;

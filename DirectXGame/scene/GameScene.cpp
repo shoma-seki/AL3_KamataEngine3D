@@ -10,6 +10,7 @@ GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
 	delete player_;
+	delete anotherPlayer;
 	for (Enemy* enemy : enemy_) {
 		delete enemy;
 	}
@@ -50,10 +51,13 @@ void GameScene::Initialize() {
 	// プレイヤー生成
 	player_ = new Player();
 	Vector3 playerPosition = {0, 0, 30};
-	player_->Initialize(model_, playerGH_, playerPosition);
+	playerModel_ = Model::CreateFromOBJ("Player", true);
+	playerBulletModel_ = Model::CreateFromOBJ("PlayerBullet", true);
+	player_->Initialize(playerModel_, playerBulletModel_, playerGH_, playerPosition);
 	player_->SetParent(&railCamera_->GetWorldTransform());
+	AnotherPlayerModel_ = Model::CreateFromOBJ("AnotherPlayer", true);
 	anotherPlayer = new AnotherPlayer();
-	anotherPlayer->Initialize(model_, playerGH_);
+	anotherPlayer->Initialize(AnotherPlayerModel_, playerGH_);
 	anotherPlayer->SetPlayer(player_);
 	spring_ = new Spring();
 	spring_->Initialize();
@@ -76,11 +80,11 @@ void GameScene::Update() {
 	railCamera_->Update();
 
 	// 跳ね返しUpdate
+	spring_->SetPlayerBullet(player_->GetBullets());
 	spring_->Update();
 
 	player_->Update(viewProjection_);
 	anotherPlayer->Update();
-	spring_->SetPlayerBullet(player_->GetBullets());
 	for (Enemy* enemy : enemy_) {
 		enemy->Update();
 	}

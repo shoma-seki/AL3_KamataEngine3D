@@ -1,9 +1,10 @@
 #include "Player.h"
 
-void Player::Initialize(Model* model, uint32_t GH_, Vector3 position) {
+void Player::Initialize(Model* model, Model* bulletModel, uint32_t GH_, Vector3 position) {
 	assert(model);
 	model_ = model;
-	playerGH_ = GH_;
+	bulletModel_ = bulletModel;
+	GH_;
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	input_ = Input::GetInstance();
@@ -73,7 +74,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	// 足されすぎないための処理
 	move = {0, 0, 0};
 
-	const float kDistancePlayerTo3DReticle = 50.0f;
+	const float kDistancePlayerTo3DReticle = 70.0f;
 	Vector3 offset = {0, 0, 1.0f};
 	offset = Multiply(offset, worldTransform_.matWorld_);
 	offset = Multiply(kDistancePlayerTo3DReticle, Normalize(offset));
@@ -116,7 +117,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	// キーが押されたらレティクルの位置を固定
 	if (input_->TriggerKey(DIK_E) || joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
 		worldTransform3DReticle_.translation_ = GetWorldPosition();
-		worldTransform3DReticle_.translation_.z += 30;
+		worldTransform3DReticle_.translation_.z += 60;
 		worldTransform3DReticle_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, worldTransform3DReticle_.translation_);
 		Vector3 positionReticle = GetWorld3DReticlePosition();
 		Matrix4x4 matViewProjectionViewport = Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport));
@@ -134,7 +135,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 	} else {
 	}*/
 
-	//playerCollisionSphere.center = GetWorldPosition();
+	// playerCollisionSphere.center = GetWorldPosition();
+
+#ifdef DEBUG
 
 	ImGui::Begin("Player");
 	ImGui::Text("2DReticle:(%f,%f)", sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y);
@@ -142,6 +145,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("Far:(%+.2f,%+.2f,%+.2f)", posFar.x, posFar.y, posFar.z);
 	ImGui::Text("3DReticle:(%+.2f,%+.2f,%+.2f)", worldTransform3DReticle_.translation_.x, worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);
 	ImGui::End();
+
+#endif // DEBUG
 
 	DebugDraw();
 }
@@ -157,8 +162,8 @@ void Player::Rotate() {
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, playerGH_);
-	model_->Draw(worldTransform3DReticle_, viewProjection, playerGH_);
+	model_->Draw(worldTransform_, viewProjection);
+	//model_->Draw(worldTransform3DReticle_, viewProjection, playerGH_);
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
@@ -180,20 +185,19 @@ void Player::Attack() {
 
 	if (CanAttack_) {
 		if (input_->TriggerKey(DIK_SPACE)) {
-			const float kBulletSpeed = 1.0f;
-			Vector3 velocity_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
-			velocity_ = Multiply(kBulletSpeed, Normalize(velocity_));
+			Vector3 direction_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
+			direction_ = Normalize(direction_);
 			// velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
 
 			PlayerBullet* newBullet = new PlayerBullet();
 			newBullet->Initialize(
-			    model_,
+			    bulletModel_,
 			    {
 			        worldTransform_.matWorld_.m[3][0],
 			        worldTransform_.matWorld_.m[3][1],
 			        worldTransform_.matWorld_.m[3][2],
 			    },
-			    velocity_);
+			    direction_);
 			bullets_.push_back(newBullet);
 		}
 
@@ -204,34 +208,33 @@ void Player::Attack() {
 
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 			bulletTime++;
-			const float kBulletSpeed = 1.0f;
-			Vector3 velocity_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
-			velocity_ = Multiply(kBulletSpeed, Normalize(velocity_));
+			Vector3 direction_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
+			direction_ = Normalize(direction_);
 			// velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
 
-			if (bulletTime % 20 == 0) {
+			if (bulletTime % kBulletCoolTime == 0) {
 				PlayerBullet* newBullet = new PlayerBullet();
 				newBullet->Initialize(
-				    model_,
+				    bulletModel_,
 				    {
 				        worldTransform_.matWorld_.m[3][0],
 				        worldTransform_.matWorld_.m[3][1],
 				        worldTransform_.matWorld_.m[3][2],
 				    },
-				    velocity_);
+				    direction_);
 				bullets_.push_back(newBullet);
 			}
 
 			if (isBulletOnce) {
 				PlayerBullet* newBullet = new PlayerBullet();
 				newBullet->Initialize(
-				    model_,
+				    bulletModel_,
 				    {
 				        worldTransform_.matWorld_.m[3][0],
 				        worldTransform_.matWorld_.m[3][1],
 				        worldTransform_.matWorld_.m[3][2],
 				    },
-				    velocity_);
+				    direction_);
 				bullets_.push_back(newBullet);
 				isBulletOnce = false;
 			}
@@ -245,7 +248,7 @@ void Player::Attack() {
 	CanAttack_ = true;
 }
 
-//void Player::SphereDraw() { DrawSphere(playerCollisionSphere, 10); }
+// void Player::SphereDraw() { DrawSphere(playerCollisionSphere, 10); }
 
 void Player::OnCollision() {}
 

@@ -2,7 +2,7 @@
 
 void AnotherPlayer::Initialize( Model* model, uint32_t GH_) {
 	model_ = model;
-	anoPlayerGH_ = GH_;
+	GH_;
 	worldTransform_.Initialize(); 
 }
 
@@ -16,7 +16,7 @@ void AnotherPlayer::Update() {
 }
 
 void AnotherPlayer::Draw(ViewProjection& viewProjection) { 
-	model_->Draw(worldTransform_, viewProjection, anoPlayerGH_); 
+	model_->Draw(worldTransform_, viewProjection); 
 }
 
 Vector3 AnotherPlayer::GetWorldPosition() {

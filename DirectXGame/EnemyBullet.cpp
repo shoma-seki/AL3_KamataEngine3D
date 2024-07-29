@@ -21,7 +21,7 @@ void EnemyBullet::Update() {
 	}
 }
 
-void EnemyBullet::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, bulletGH_); }
+void EnemyBullet::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection); }
 
 Vector3 EnemyBullet::GetWorldPosition() { 
 	// ワールド座標を入れる変数

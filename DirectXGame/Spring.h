@@ -31,17 +31,22 @@ private:
 
 	Sphere anoPlayerColSphere{
 	    .center = {0, 0, 0},
-          .radius = 2
+          .radius = 4
     };
 	Sphere playerCollisionSphere{
 	    .center = {0, 0, 0},
-          .radius = 2
+          .radius = 4
     };
 	Sphere bulletColSphere{
 	    .center = {0, 0, 0},
-          .radius = 1
+          .radius = 2
     };
 
-	int inputTime_;
-	bool isOnce_;
+	int collisionTime = 10;
+
+	int onCollisionTime1 = 0;
+	bool onCollisionEnter1 = false;
+
+	int onCollisionTime2 = 0;
+	bool onCollisionEnter2 = false;
 };

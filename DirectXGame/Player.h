@@ -27,7 +27,7 @@ public:
 		delete sprite2DReticle_;
 	}
 
-	void Initialize(Model* model, uint32_t GH_, Vector3 position);
+	void Initialize(Model* model, Model* bulletModel, uint32_t GH_, Vector3 position);
 	void Update(const ViewProjection& viewProjection);
 	void Rotate();
 	void Draw(ViewProjection& viewProjection);
@@ -50,11 +50,13 @@ public:
 	const float kRadius_ = 2;
 
 	int bulletTime = 0;
+	const int kBulletCoolTime = 60;
 	bool isBulletOnce = true;
 
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
+	Model* bulletModel_ = nullptr;
 	uint32_t playerGH_ = 0u;
 	// キーボード入力
 	Input* input_ = nullptr;

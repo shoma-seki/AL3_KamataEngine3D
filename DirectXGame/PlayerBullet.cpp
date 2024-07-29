@@ -8,19 +8,25 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	worldTransform_.translation_ = {};
 	position_ = position;
 	velocity_ = velocity;
+
+	objectColor_.Initialize();
+	objectColor_.SetColor({0.851f, 0.741f, 0.184f, 1.0f});
+	objectColor_.TransferMatrix();
 }
 
 void PlayerBullet::Update() {
-	position_ = Add(position_, velocity_);
+	shotTime_++;
+
+	position_ = Add(position_, velocity_ * speed_);
 	worldTransform_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, position_);
 	if (--deathTimer_ <= 0) {
 		isDead_ = true;
 	}
 }
 
-void PlayerBullet::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, bulletGH_); }
+void PlayerBullet::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, &objectColor_); }
 
-Vector3 PlayerBullet::GetWorldPosition() { 
+Vector3 PlayerBullet::GetWorldPosition() {
 	// ワールド座標を入れる変数
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];

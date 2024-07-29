@@ -37,10 +37,13 @@ void Enemy::Update() {
 			bullet->Update();
 		}
 	}*/
-
+#ifdef DEBUG
 	ImGui::Begin("Enemy");
 	ImGui::Text("%f  %f  %f", translate_.x, translate_.y, translate_.z);
 	ImGui::End();
+
+#endif // DEBUG
+
 }
 
 void Enemy::Fire() {

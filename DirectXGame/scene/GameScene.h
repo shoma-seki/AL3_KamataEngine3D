@@ -88,6 +88,9 @@ private: // メンバ変数
 	//モデル
 	Model* model_ = nullptr;
 	Model* modelSkydome_ = nullptr;
+	Model* playerBulletModel_ = nullptr;
+	Model* playerModel_ = nullptr;
+	Model* AnotherPlayerModel_ = nullptr;
 	//プレイヤー
 	Player* player_ = nullptr;
 	AnotherPlayer* anotherPlayer = nullptr;
