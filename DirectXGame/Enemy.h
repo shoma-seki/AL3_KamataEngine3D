@@ -17,7 +17,7 @@ class Enemy {
 public:
 	Enemy() {}
 	~Enemy() {}
-	void Initialize(Vector3 position, Model* model, uint32_t GH_);
+	void Initialize(Vector3 position, Model* model, Model* bulletModel, uint32_t GH_);
 	void Update();
 	void Fire();
 	void Draw(ViewProjection& viewProjection);
@@ -40,6 +40,7 @@ public:
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
+	Model* bulletModel_ = nullptr;
 	uint32_t enemyGH_;
 	// 行動パターンフェーズ
 	Phase phase_ = Phase::Approach;
@@ -56,7 +57,7 @@ private:
 	Vector3 bulletDirection = {};
 
 	// 弾の間隔
-	const int32_t kAttackInterval = 30;
+	const int32_t kAttackInterval = 120;
 	uint32_t attackInterval = kAttackInterval;
 
 	// プレイヤー

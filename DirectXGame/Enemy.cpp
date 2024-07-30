@@ -1,9 +1,10 @@
 #include "Enemy.h"
 #include "GameScene.h"
 
-void Enemy::Initialize(Vector3 position,Model* model, uint32_t GH_) {
+void Enemy::Initialize(Vector3 position, Model* model, Model* bulletModel, uint32_t GH_) {
 	assert(model);
 	model_ = model;
+	bulletModel_ = bulletModel;
 	enemyGH_ = GH_;
 	translate_ = position;
 	worldTransform_.Initialize();
@@ -11,31 +12,31 @@ void Enemy::Initialize(Vector3 position,Model* model, uint32_t GH_) {
 void Enemy::Update() {
 	switch (phase_) {
 	case Phase::Approach:
-	    ApproachPhase();
-	    if (translate_.z < 0.0f) {
-	        phase_ = Phase::Leave;
-	    }
-	    break;
+		ApproachPhase();
+		if (translate_.z < 0.0f) {
+			phase_ = Phase::Leave;
+		}
+		break;
 	case Phase::Leave:
-	    LeavePhase();
-	    break;
+		LeavePhase();
+		break;
 	default:
-	    break;
+		break;
 	}
 	(this->*phaseFuncTable[static_cast<size_t>(phase_)])();
 
-	//bullets_.remove_if([](EnemyBullet* bullet) {
+	// bullets_.remove_if([](EnemyBullet* bullet) {
 	//	if (bullet->IsDead()) {
 	//		delete bullet;
 	//		return true;
 	//	}
 	//	return false;
-	//});
+	// });
 
 	/*for (EnemyBullet* bullet : bullets_) {
-		if (bullet) {
-			bullet->Update();
-		}
+	    if (bullet) {
+	        bullet->Update();
+	    }
 	}*/
 #ifdef DEBUG
 	ImGui::Begin("Enemy");
@@ -43,26 +44,23 @@ void Enemy::Update() {
 	ImGui::End();
 
 #endif // DEBUG
-
 }
 
 void Enemy::Fire() {
-	//assert(player_);
-	// 弾の発射
+	// assert(player_);
+	//  弾の発射
 	attackInterval--;
 	if (attackInterval <= 0) {
 		attackInterval = kAttackInterval;
 		EnemyBullet* newBullets = new EnemyBullet();
 		playerWorldPos_ = player_->GetWorldPosition();
-		bulletDirection = Normalize(Subtract(playerWorldPos_, GetWorldPosition()));
-		newBullets->Initialize(model_, translate_, Multiply(0.7f, bulletDirection));
+		bulletDirection = Normalize(playerWorldPos_ - GetWorldPosition());
+		newBullets->Initialize(bulletModel_, translate_, Multiply(0.7f, bulletDirection));
 		gameScene_->AddEnemyBullet(newBullets);
 	}
 }
 
-void Enemy::Draw(ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, enemyGH_);
-}
+void Enemy::Draw(ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection); }
 
 Vector3 Enemy::GetWorldPosition() {
 	// ワールド座標を入れる変数

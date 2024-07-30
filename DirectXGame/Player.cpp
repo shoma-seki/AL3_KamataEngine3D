@@ -69,6 +69,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	// 座標制限
 	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kMoveLimitX, kMoveLimitX);
 	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kMoveLimitY, kMoveLimitY);
+
 	// 行列更新
 	worldTransform_.UpdateMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	// 足されすぎないための処理

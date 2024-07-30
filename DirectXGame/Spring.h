@@ -29,6 +29,8 @@ private:
 	AnotherPlayer* anotherPlayer_ = nullptr;
 	std::list<PlayerBullet*> playerBullets_;
 
+	Input* input_ = nullptr;
+
 	Sphere anoPlayerColSphere{
 	    .center = {0, 0, 0},
           .radius = 4

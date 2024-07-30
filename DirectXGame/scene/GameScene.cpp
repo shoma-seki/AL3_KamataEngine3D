@@ -46,6 +46,7 @@ void GameScene::Initialize() {
 	// モデルの生成
 	model_ = Model::Create();
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_);
 	// プレイヤー生成
@@ -76,7 +77,8 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-	// UpdateEnemyPopCommands();
+	UpdateEnemyPopCommands();
+
 	railCamera_->Update();
 
 	// 跳ね返しUpdate
@@ -215,7 +217,7 @@ void GameScene::CheckAllCollisions() {
 #pragma endregion
 
 #pragma region 自弾と敵弾の当たり判定
-	for (EnemyBullet* ebullet : enemyBullets_) {
+	/*for (EnemyBullet* ebullet : enemyBullets_) {
 		posA = ebullet->GetWorldPosition();
 		for (PlayerBullet* pbullet : playerBullets) {
 			posB = pbullet->GetWorldPosition();
@@ -225,7 +227,7 @@ void GameScene::CheckAllCollisions() {
 				pbullet->OnCollision();
 			}
 		}
-	}
+	}*/
 #pragma endregion
 }
 
@@ -285,7 +287,7 @@ void GameScene::UpdateEnemyPopCommands() {
 
 void GameScene::PopEnemy(Vector3 position) {
 	enemy_.emplace_back(new Enemy());
-	enemy_.back()->Initialize(position, model_, enemyGH_);
+	enemy_.back()->Initialize(position, modelEnemy_,playerBulletModel_, enemyGH_);
 	enemy_.back()->SetPlayer(player_);
 	enemy_.back()->SetGameScene(this);
 }
