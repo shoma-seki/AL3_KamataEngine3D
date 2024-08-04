@@ -13,9 +13,18 @@ void TitleScene::Initialize() {
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 }
 
-void TitleScene::Update() {}
+void TitleScene::Update() {
+	XINPUT_STATE joyState;
+	if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
+		return;
+	}
 
-void TitleScene::Draw() {	
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		isFinished = true;
+	}
+}
+
+void TitleScene::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
@@ -24,7 +33,7 @@ void TitleScene::Draw() {
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
-	
+
 	title->Draw();
 
 	/// </summary>

@@ -5,6 +5,8 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "TextureManager.h"
+#include "WinApp.h"
+#include "Windows.h"
 
 #include "PlayerBullet.h"
 
@@ -13,6 +15,8 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+
+	bool IsFinished() const { return isFinished; }
 
 private:
 	ViewProjection viewProjection_;
@@ -23,4 +27,6 @@ private:
 
 	uint32_t texture;
 	Sprite* title = nullptr;
+
+	bool isFinished = false;
 };
