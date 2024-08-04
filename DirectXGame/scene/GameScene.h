@@ -77,7 +77,7 @@ public: // メンバ関数
 
 	void PopEnemy(Vector3 position);
 
-	bool IsFinished() const { return isFinished; }
+	bool IsFinished() { return isFinished; }
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;

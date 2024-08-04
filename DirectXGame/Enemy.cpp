@@ -12,10 +12,12 @@ void Enemy::Initialize(Vector3 position, Model* model, Model* bulletModel, uint3
 	phase_ = Phase::Approach;
 }
 void Enemy::Update() {
+	aliveTime++;
+
 	switch (phase_) {
 	case Phase::Approach:
 		ApproachPhase();
-		if (std::fabsf(playerWorldPos_.z - GetWorldPosition().z) < 100.0f) {
+		if (aliveTime > 60 * 6) {
 			phase_ = Phase::Leave;
 		}
 		break;

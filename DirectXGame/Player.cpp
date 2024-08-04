@@ -58,8 +58,7 @@ void Player::Update(const ViewProjection& viewProjection, const Vector3& AnoPlay
 		move.y += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed;
 	}
 
-	//画面外に行かないように
-
+	// 画面外に行かないように
 
 	// 攻撃
 	Attack();
@@ -118,7 +117,7 @@ void Player::Update(const ViewProjection& viewProjection, const Vector3& AnoPlay
 
 	const float kDistanceTestObject = 100;
 
-	//キーが押されたらレティクルの位置を固定
+	// キーが押されたらレティクルの位置を固定
 	if (input_->TriggerKey(DIK_E) || joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
 		/*worldTransform3DReticle_.translation_ = GetWorldPosition();
 		worldTransform3DReticle_.translation_.z += 60;*/
@@ -169,7 +168,7 @@ void Player::Rotate() {
 
 void Player::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection);
-	//model_->Draw(worldTransform3DReticle_, viewProjection, playerGH_);
+	// model_->Draw(worldTransform3DReticle_, viewProjection, playerGH_);
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
@@ -202,7 +201,7 @@ void Player::Attack() {
 	}
 
 	if (CanAttack_) {
-		//if (input_->TriggerKey(DIK_SPACE)) {
+		// if (input_->TriggerKey(DIK_SPACE)) {
 		//	Vector3 direction_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
 		//	direction_ = Normalize(direction_);
 		//	// velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
@@ -220,7 +219,7 @@ void Player::Attack() {
 		//}
 
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			//bulletTime++;
+			// bulletTime++;
 			Vector3 direction_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
 			direction_ = Normalize(direction_);
 			// velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
@@ -263,7 +262,11 @@ void Player::Attack() {
 
 // void Player::SphereDraw() { DrawSphere(playerCollisionSphere, 10); }
 
-void Player::OnCollision() {}
+void Player::OnCollision() {
+	if (HP >= 0) {
+		HP--;
+	}
+}
 
 Vector3 Player::GetWorldPosition() {
 	// ワールド座標を入れる変数

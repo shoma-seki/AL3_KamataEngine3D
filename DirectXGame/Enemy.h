@@ -44,6 +44,8 @@ private:
 	Model* bulletModel_ = nullptr;
 	uint32_t enemyGH_;
 	bool isAlive = true;
+	int aliveTime = 0;
+
 	// 行動パターンフェーズ
 	Phase phase_ = Phase::Approach;
 

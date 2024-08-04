@@ -67,8 +67,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	primitiveDrawer = PrimitiveDrawer::GetInstance();
 	primitiveDrawer->Initialize();
 
-	titleScene->Initialize();
 #pragma endregion
+	titleScene = new TitleScene();
+	titleScene->Initialize();
 
 	// メインループ
 	while (true) {
@@ -82,6 +83,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 入力関連の毎フレーム処理
 		input->Update();
 
+		ChangeScene();
 		switch (scene) {
 		case Scene::kTitle:
 			titleScene->Update();
@@ -146,12 +148,14 @@ void ChangeScene() {
 		}
 		break;
 	case Scene::kGame:
-		scene = Scene::kTitle;
-		delete gameScene;
-		gameScene = nullptr;
+		if (gameScene->IsFinished()) {
+			scene = Scene::kTitle;
+			delete gameScene;
+			gameScene = nullptr;
 
-		titleScene = new TitleScene();
-		titleScene->Initialize();
+			titleScene = new TitleScene();
+			titleScene->Initialize();
+		}
 		break;
 	}
 }

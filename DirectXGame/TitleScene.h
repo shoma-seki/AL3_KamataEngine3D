@@ -16,7 +16,7 @@ public:
 	void Update();
 	void Draw();
 
-	bool IsFinished() const { return isFinished; }
+	bool IsFinished() { return isFinished; }
 
 private:
 	ViewProjection viewProjection_;

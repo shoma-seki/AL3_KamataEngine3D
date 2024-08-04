@@ -82,4 +82,7 @@ private:
 
 	//弾を発射しない
 	bool CanAttack_;
+
+	//HP
+	int HP = 3;
 };
