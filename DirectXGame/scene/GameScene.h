@@ -126,5 +126,8 @@ private: // メンバ変数
 	int waitTime_;
 	bool isFinished = false;
 
+	//時間
+	int gameTime = 0;
+
 	/// </summary>
 };

@@ -82,6 +82,11 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	gameTime++;
+	if (gameTime > 60 * 30) {
+		isFinished = true;
+	}
+
 	UpdateEnemyPopCommands();
 
 	railCamera_->Update();
