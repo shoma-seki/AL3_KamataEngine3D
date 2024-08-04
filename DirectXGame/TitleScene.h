@@ -12,6 +12,8 @@
 
 class TitleScene {
 public:
+	~TitleScene() { audio_->StopWave(titleBgmV); }
+
 	void Initialize();
 	void Update();
 	void Draw();
@@ -29,4 +31,7 @@ private:
 	Sprite* title = nullptr;
 
 	bool isFinished = false;
+
+	uint32_t titleBgm;
+	uint32_t titleBgmV;
 };

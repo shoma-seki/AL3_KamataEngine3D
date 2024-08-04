@@ -50,6 +50,7 @@ struct Vector3 final {
 		this->x += v2.x;
 		this->y += v2.y;
 		this->z += v2.z;
+		return Vector3(this->x, this->y, this->z);
 	}
 	Vector3 operator-(const Vector3& v2) {
 		this->x -= v2.x;

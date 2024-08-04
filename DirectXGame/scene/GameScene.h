@@ -125,9 +125,41 @@ private: // メンバ変数
 	bool isWait_;
 	int waitTime_;
 	bool isFinished = false;
+	bool isGameOver = false;
+	bool isClear = false;
+
+	//ハート
+	uint32_t heart1T;
+	uint32_t heart2T;
+	uint32_t heart3T;
+	Sprite* heart1 = nullptr;
+	Sprite* heart2 = nullptr;
+	Sprite* heart3 = nullptr;
+
+	//操作
+	uint32_t sousaT;
+	Sprite* sousa = nullptr;
 
 	//時間
 	int gameTime = 0;
+	int gameOverTime = 0;
+	int clearTime = 0;
+
+	//ゲームオーバー
+	uint32_t texture;
+	Sprite* title = nullptr;
+
+	//クリア
+	uint32_t clearT;
+	Sprite* clear = nullptr;
+
+	//サウンド
+	uint32_t damage;
+	uint32_t explodeS;
+	uint32_t gameBgm;
+	uint32_t pon;
+
+	uint32_t gameBgmV;
 
 	/// </summary>
 };

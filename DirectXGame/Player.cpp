@@ -14,6 +14,10 @@ void Player::Initialize(Model* model, Model* bulletModel, uint32_t GH_, Vector3 
 }
 
 void Player::Update(const ViewProjection& viewProjection, const Vector3& AnoPlayerPosition) {
+	if (HP == 0) {
+		isAlive = false;
+	}
+
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -263,7 +267,7 @@ void Player::Attack() {
 // void Player::SphereDraw() { DrawSphere(playerCollisionSphere, 10); }
 
 void Player::OnCollision() {
-	if (HP >= 0) {
+	if (HP > 0) {
 		HP--;
 	}
 }

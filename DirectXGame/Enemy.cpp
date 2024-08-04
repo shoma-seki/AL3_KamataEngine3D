@@ -12,14 +12,16 @@ void Enemy::Initialize(Vector3 position, Model* model, Model* bulletModel, uint3
 	phase_ = Phase::Approach;
 }
 void Enemy::Update() {
+	playerWorldPos_ = player_->GetWorldPosition();
+
 	aliveTime++;
 
 	switch (phase_) {
 	case Phase::Approach:
 		ApproachPhase();
-		if (aliveTime > 60 * 6) {
+		/*if (aliveTime > 60 * 6) {
 			phase_ = Phase::Leave;
-		}
+		}*/
 		break;
 	case Phase::Leave:
 		LeavePhase();
@@ -57,9 +59,8 @@ void Enemy::Fire() {
 	if (attackInterval <= 0) {
 		attackInterval = kAttackInterval;
 		EnemyBullet* newBullets = new EnemyBullet();
-		playerWorldPos_ = player_->GetWorldPosition();
 		bulletDirection = Normalize(playerWorldPos_ - GetWorldPosition());
-		newBullets->Initialize(bulletModel_, translate_, Multiply(1.2f, bulletDirection));
+		newBullets->Initialize(bulletModel_, translate_, Multiply(0.6f, bulletDirection));
 		gameScene_->AddEnemyBullet(newBullets);
 	}
 }
@@ -80,9 +81,10 @@ void Enemy::OnCollision() { isAlive = false; }
 void Enemy::ApproachPhase() {
 	velocity_ = {0, 0, -0.1f};
 	translate_ = Add(translate_, velocity_);
-	/*if (Length(playerWorldPos_, GetWorldPosition()) < 5.0f) {
-	    phase_ = Phase::Leave;
-	}*/
+	if (playerWorldPos_.z > GetWorldPosition().z) {
+		isAlive = false;
+		phase_ = Phase::Leave;
+	}
 	worldTransform_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, translate_);
 	Fire();
 }
@@ -91,6 +93,11 @@ void Enemy::LeavePhase() {
 	velocity_ = {0.3f, -0.3f, 0};
 	translate_ = Add(translate_, velocity_);
 	worldTransform_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, translate_);
+
+	leaveTime++;
+	if (leaveTime == 20) {
+		isAlive = false;
+	}
 }
 
 void (Enemy::*Enemy::phaseFuncTable[])() = {&Enemy::ApproachPhase, &Enemy::LeavePhase};

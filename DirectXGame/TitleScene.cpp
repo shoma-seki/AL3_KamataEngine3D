@@ -8,6 +8,9 @@ void TitleScene::Initialize() {
 	texture = TextureManager::Load("./Resources./title.png");
 	title = Sprite::Create(texture, {640, 360}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
+	titleBgm = audio_->LoadWave("titleBgm.wav");
+	titleBgmV = audio_->PlayWave(titleBgm, true);
+
 	viewProjection_.Initialize();
 
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);

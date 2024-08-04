@@ -53,6 +53,10 @@ public:
 	const int kBulletCoolTime = 60;
 	bool isBulletOnce = true;
 
+	bool IsAlive() { return isAlive; }
+
+	int HP = 3;
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
@@ -84,5 +88,5 @@ private:
 	bool CanAttack_;
 
 	//HP
-	int HP = 3;
+	bool isAlive = true;
 };

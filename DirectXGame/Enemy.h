@@ -70,4 +70,6 @@ private:
 
 	// ゲームシーン
 	GameScene* gameScene_ = nullptr;
+
+	int leaveTime;
 };

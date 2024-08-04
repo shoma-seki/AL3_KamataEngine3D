@@ -24,6 +24,8 @@ GameScene::~GameScene() {
 		delete explosion;
 	}
 	delete spring_;
+
+	audio_->StopWave(gameBgmV);
 }
 
 void GameScene::Initialize() {
@@ -79,12 +81,73 @@ void GameScene::Initialize() {
 	TextureManager::Load("./Resources./Reticle.png");
 
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+
+	texture = TextureManager::Load("./Resources./gameOver.png");
+	title = Sprite::Create(texture, {-640, 360}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	clearT = TextureManager::Load("./Resources./gameClear.png");
+	clear = Sprite::Create(clearT, {-640, 360}, {1, 1, 1, 1}, {0.5f, 0.5f});
+
+	heart1T = TextureManager::Load("./Resources./heart1.png");
+	heart2T = TextureManager::Load("./Resources./heart2.png");
+	heart3T = TextureManager::Load("./Resources./heart3.png");
+
+	heart1 = Sprite::Create(heart1T, {87, 79}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	heart2 = Sprite::Create(heart2T, {199, 137}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	heart3 = Sprite::Create(heart3T, {277, 172}, {1, 1, 1, 1}, {0.5f, 0.5f});
+
+	sousaT = TextureManager::Load("./Resources./sousa.png");
+
+	sousa = Sprite::Create(sousaT, {1070, 171}, {1, 1, 1, 1}, {0.5f, 0.5f});
+
+	// サウンド読み込み
+	damage = audio_->LoadWave("damage.wav");
+	explodeS = audio_->LoadWave("explode.wav");
+	gameBgm = audio_->LoadWave("gameBgm.wav");
+	pon = audio_->LoadWave("pon.wav");
+
+	gameBgmV = audio_->PlayWave(gameBgm, true);
 }
 
 void GameScene::Update() {
 	gameTime++;
-	if (gameTime > 60 * 30) {
-		isFinished = true;
+	if (gameTime > 60 * 50) {
+		isClear = true;
+	}
+
+	if (player_->IsAlive() == false) {
+		isGameOver = true;
+	}
+
+	if (isClear) {
+		clearTime++;
+
+		clear->SetPosition({640, 360});
+
+		if (clearTime >= 60 * 2) {
+			isFinished = true;
+		}
+	}
+
+	if (isGameOver) {
+		gameOverTime++;
+
+		title->SetPosition({640, 360});
+
+		if (gameOverTime >= 60 * 2) {
+			isFinished = true;
+		}
+	}
+
+	if (player_->HP == 2) {
+		heart1->SetPosition({-100, 100});
+	}
+
+	if (player_->HP == 1) {
+		heart2->SetPosition({-100, 100});
+	}
+
+	if (player_->HP == 0) {
+		heart3->SetPosition({-100, 100});
 	}
 
 	UpdateEnemyPopCommands();
@@ -204,6 +267,16 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	player_->DrawUI();
+
+	title->Draw();
+
+	clear->Draw();
+
+	sousa->Draw();
+
+	heart1->Draw();
+	heart2->Draw();
+	heart3->Draw();
 	/// </summary>
 
 	// スプライト描画後処理
@@ -228,6 +301,8 @@ void GameScene::CheckAllCollisions() {
 		if (player_->kRadius_ + bullet->kRadius_ >= dis) {
 			player_->OnCollision();
 			bullet->OnCollision();
+			railCamera_->isShake_ = true;
+			audio_->PlayWave(damage);
 		}
 	}
 #pragma endregion
@@ -241,6 +316,13 @@ void GameScene::CheckAllCollisions() {
 			if (enemy->kRadius_ + bullet->kRadius_ >= dis) {
 				enemy->OnCollision();
 				bullet->OnCollision();
+				Explosion* newExplosion = new Explosion();
+				newExplosion->Initialize(playerBulletModel_, bullet->GetWorldPosition(), bullet->GetReflectionCount());
+				explosion_.emplace_back(newExplosion);
+				if (bullet->GetReflectionCount() != 0) {
+					railCamera_->isShake_ = true;
+					audio_->PlayWave(explodeS);
+				}
 			}
 		}
 	}
@@ -337,6 +419,10 @@ void GameScene::BulletExplosion() {
 			Explosion* newExplosion = new Explosion();
 			newExplosion->Initialize(playerBulletModel_, bullet->GetWorldPosition(), bullet->GetReflectionCount());
 			explosion_.emplace_back(newExplosion);
+			if (bullet->GetReflectionCount() != 0) {
+				railCamera_->isShake_ = true;
+				audio_->PlayWave(explodeS);
+			}
 		}
 	}
 	explosion_.remove_if([](Explosion* explode) {

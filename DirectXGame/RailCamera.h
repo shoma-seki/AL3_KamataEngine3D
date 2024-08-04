@@ -13,9 +13,15 @@ public:
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
+	bool isShake_;
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
 	Vector3 velocity_ = {0, 0, 0.3f};
+
+	Vector3 rnd_;
+	const int kShakeTime = 15;
+	int shakeTime = kShakeTime;
 };
