@@ -28,7 +28,7 @@ public:
 	}
 
 	void Initialize(Model* model, Model* bulletModel, uint32_t GH_, Vector3 position);
-	void Update(const ViewProjection& viewProjection);
+	void Update(const ViewProjection& viewProjection, const Vector3& AnoPlayerPosition);
 	void Rotate();
 	void Draw(ViewProjection& viewProjection);
 	void DrawUI();
@@ -65,8 +65,8 @@ private:
 	Vector3 move = {0, 0, 0};
 	const float kCharacterSpeed = 0.2f;
 	// 移動限界座標
-	const float kMoveLimitX = 33;
-	const float kMoveLimitY = 17;
+	const float kMoveLimitX = 17;
+	const float kMoveLimitY = 10;
 	// 回転の速さ
 	const float kRotSpeed = 0.02f;
 	// 弾

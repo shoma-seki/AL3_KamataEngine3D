@@ -8,12 +8,14 @@ void Enemy::Initialize(Vector3 position, Model* model, Model* bulletModel, uint3
 	enemyGH_ = GH_;
 	translate_ = position;
 	worldTransform_.Initialize();
+
+	phase_ = Phase::Approach;
 }
 void Enemy::Update() {
 	switch (phase_) {
 	case Phase::Approach:
 		ApproachPhase();
-		if (translate_.z < 0.0f) {
+		if (std::fabsf(playerWorldPos_.z - GetWorldPosition().z) < 100.0f) {
 			phase_ = Phase::Leave;
 		}
 		break;
@@ -23,7 +25,7 @@ void Enemy::Update() {
 	default:
 		break;
 	}
-	(this->*phaseFuncTable[static_cast<size_t>(phase_)])();
+	//(this->*phaseFuncTable[static_cast<size_t>(phase_)])();
 
 	// bullets_.remove_if([](EnemyBullet* bullet) {
 	//	if (bullet->IsDead()) {
@@ -71,14 +73,14 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
-void Enemy::OnCollision() {}
+void Enemy::OnCollision() { isAlive = false; }
 
 void Enemy::ApproachPhase() {
 	velocity_ = {0, 0, -0.1f};
 	translate_ = Add(translate_, velocity_);
-	if (translate_.z < 0.0f) {
-		phase_ = Phase::Leave;
-	}
+	/*if (Length(playerWorldPos_, GetWorldPosition()) < 5.0f) {
+	    phase_ = Phase::Leave;
+	}*/
 	worldTransform_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, translate_);
 	Fire();
 }

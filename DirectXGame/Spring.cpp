@@ -12,18 +12,18 @@ void Spring::Update() {
 	anoPlayerColSphere.center = anotherPlayer_->GetWorldPosition();
 
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER || input_->PushKey(DIK_SPACE)) {
-		collisionTime++;
+		//collisionTime++;
 		bool isCanAttack = true;
 		for (PlayerBullet* bullet : playerBullets_) {
 			if (player_ && anotherPlayer_ && bullet) {
-				/*if (bullet->GetWorldPosition().z >= player_->GetWorldPosition().z && bullet->GetWorldPosition().z <= anotherPlayer_->GetWorldPosition().z) {
-				    isCanAttack = false;
+				if (bullet->GetWorldPosition().z >= player_->GetWorldPosition().z && bullet->GetWorldPosition().z <= anotherPlayer_->GetWorldPosition().z) {
+					isCanAttack = false;
 				} else {
-				    isCanAttack = true;
-				}*/
+					isCanAttack = true;
+				}
 
 				// 撃てるかどうかを判定
-				Vector3 frontDirection = {0, 0, 1};
+				/*Vector3 frontDirection = {0, 0, 1};
 				Vector3 backDirection = {0, 0, -1};
 
 				if (frontDirection == bullet->GetDirection()) {
@@ -31,34 +31,30 @@ void Spring::Update() {
 				}
 				if (backDirection == bullet->GetDirection()) {
 					isCanAttack = false;
-				}
+				}*/
 
 				bulletColSphere.center = bullet->GetWorldPosition();
 				if (isCollision(playerCollisionSphere, bulletColSphere)) {
 					bullet->onCollisionPTime++;
-					if (bullet->onCollisionPTime == 1) {
-						bullet->onCollisionEnter = true;
-					}
 				} else {
 					bullet->onCollisionPTime = 0;
-					bullet->onCollisionEnter = false;
 				}
-				if (isCollision(anoPlayerColSphere, bulletColSphere)) {
-					bullet->onCollisionATime++;
-					if (bullet->onCollisionATime == 1) {
-						bullet->onCollisionEnter = true;
-					}
-				} else {
-					bullet->onCollisionATime = 0;
-					if (isCollision(playerCollisionSphere, bulletColSphere) == false) {
-						bullet->onCollisionEnter = false;
-					}
+				if (bullet->onCollisionPTime == 1) {
+					bullet->DirectionInverce();
+					// player_->SetDontAttack();
+					// collisionTime = 0;
 				}
 
-				if (bullet->GetShotTime() >= 10 && bullet->onCollisionEnter) {
+				if (isCollision(anoPlayerColSphere, bulletColSphere)) {
+					bullet->onCollisionATime++;
+				} else {
+					bullet->onCollisionATime = 0;
+				}
+
+				if (bullet->onCollisionATime == 1) {
 					bullet->DirectionInverce();
-					player_->SetDontAttack();
-					collisionTime = 0;
+					// player_->SetDontAttack();
+					// collisionTime = 0;
 				}
 			}
 		}

@@ -20,6 +20,9 @@ GameScene::~GameScene() {
 	for (EnemyBullet* bullet : enemyBullets_) {
 		delete bullet;
 	}
+	for (Explosion* explosion : explosion_) {
+		delete explosion;
+	}
 	delete spring_;
 }
 
@@ -34,7 +37,7 @@ void GameScene::Initialize() {
 
 	// レールカメラ
 	railCamera_ = new RailCamera();
-	railCamera_->Initialize({0, 0, 0}, {0, 0, 0});
+	railCamera_->Initialize({0, 0, -1000}, {0, 0, 0});
 
 	// ワールドトランスフォームとビュープロジェクションの初期化
 	worldTransform_.Initialize();
@@ -56,10 +59,12 @@ void GameScene::Initialize() {
 	playerBulletModel_ = Model::CreateFromOBJ("PlayerBullet", true);
 	player_->Initialize(playerModel_, playerBulletModel_, playerGH_, playerPosition);
 	player_->SetParent(&railCamera_->GetWorldTransform());
+	// もう一人の自分
 	AnotherPlayerModel_ = Model::CreateFromOBJ("AnotherPlayer", true);
 	anotherPlayer = new AnotherPlayer();
 	anotherPlayer->Initialize(AnotherPlayerModel_, playerGH_);
 	anotherPlayer->SetPlayer(player_);
+	// 跳ね返し
 	spring_ = new Spring();
 	spring_->Initialize();
 	spring_->SetPlayer(player_);
@@ -85,15 +90,25 @@ void GameScene::Update() {
 	spring_->SetPlayerBullet(player_->GetBullets());
 	spring_->Update();
 
-	player_->Update(viewProjection_);
+	// 爆発
+	BulletExplosion();
+
+	player_->Update(viewProjection_, anotherPlayer->GetWorldPosition());
 	anotherPlayer->Update();
 	for (Enemy* enemy : enemy_) {
 		enemy->Update();
 	}
+	enemy_.remove_if([](Enemy* enemy) {
+		if (enemy->IsAlive() == false) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+
 	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Update();
 	}
-
 	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->IsDead()) {
 			delete bullet;
@@ -101,6 +116,12 @@ void GameScene::Update() {
 		}
 		return false;
 	});
+
+	// 爆発
+	for (Explosion* explosion : explosion_) {
+		explosion->Update();
+	}
+
 	skydome_->Update();
 	// デバッグカメラ切り替え
 	if (input_->TriggerKey(DIK_F)) {
@@ -157,6 +178,10 @@ void GameScene::Draw() {
 	}
 	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Draw(viewProjection_);
+	}
+	// 爆発
+	for (Explosion* explosion : explosion_) {
+		explosion->Draw(viewProjection_);
 	}
 	skydome_->Draw(viewProjection_);
 	/// </summary>
@@ -216,17 +241,32 @@ void GameScene::CheckAllCollisions() {
 	}
 #pragma endregion
 
-#pragma region 自弾と敵弾の当たり判定
-	/*for (EnemyBullet* ebullet : enemyBullets_) {
-		posA = ebullet->GetWorldPosition();
-		for (PlayerBullet* pbullet : playerBullets) {
-			posB = pbullet->GetWorldPosition();
-			float dis = Length(posA, posB);
-			if (ebullet->kRadius_ + pbullet->kRadius_ >= dis) {
-				ebullet->OnCollision();
-				pbullet->OnCollision();
+#pragma region 爆発と敵の当たり判定
+
+	for (Enemy* enemy : enemy_) {
+		for (Explosion* explode : explosion_) {
+			Sphere exlodeSphere{.center = explode->GetWorldPosition(), .radius = (float)explode->reflectionCount_};
+			Sphere enemySphere{.center = enemy->GetWorldPosition(), .radius = 2.0f};
+
+			if (isCollision(exlodeSphere, enemySphere)) {
+				enemy->OnCollision();
 			}
 		}
+	}
+
+#pragma endregion
+
+#pragma region 自弾と敵弾の当たり判定
+	/*for (EnemyBullet* ebullet : enemyBullets_) {
+	    posA = ebullet->GetWorldPosition();
+	    for (PlayerBullet* pbullet : playerBullets) {
+	        posB = pbullet->GetWorldPosition();
+	        float dis = Length(posA, posB);
+	        if (ebullet->kRadius_ + pbullet->kRadius_ >= dis) {
+	            ebullet->OnCollision();
+	            pbullet->OnCollision();
+	        }
+	    }
 	}*/
 #pragma endregion
 }
@@ -285,9 +325,27 @@ void GameScene::UpdateEnemyPopCommands() {
 	}
 }
 
+void GameScene::BulletExplosion() {
+	std::list<PlayerBullet*> bullets = player_->GetBullets();
+	for (PlayerBullet* bullet : bullets) {
+		if (bullet->IsDead()) {
+			Explosion* newExplosion = new Explosion();
+			newExplosion->Initialize(playerBulletModel_, bullet->GetWorldPosition(), bullet->GetReflectionCount());
+			explosion_.emplace_back(newExplosion);
+		}
+	}
+	explosion_.remove_if([](Explosion* explode) {
+		if (explode->IsDead()) {
+			delete explode;
+			return true;
+		}
+		return false;
+	});
+}
+
 void GameScene::PopEnemy(Vector3 position) {
 	enemy_.emplace_back(new Enemy());
-	enemy_.back()->Initialize(position, modelEnemy_,playerBulletModel_, enemyGH_);
+	enemy_.back()->Initialize(position, modelEnemy_, playerBulletModel_, enemyGH_);
 	enemy_.back()->SetPlayer(player_);
 	enemy_.back()->SetGameScene(this);
 }

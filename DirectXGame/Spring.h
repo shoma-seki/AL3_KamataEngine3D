@@ -52,3 +52,35 @@ private:
 	int onCollisionTime2 = 0;
 	bool onCollisionEnter2 = false;
 };
+
+// 一旦避難
+/*bulletColSphere.center = bullet->GetWorldPosition();
+                if (isCollision(playerCollisionSphere, bulletColSphere)) {
+                    bullet->onCollisionPTime++;
+                    if (bullet->onCollisionPTime == 1) {
+                        bullet->onCollisionEnter = true;
+                    }
+                } else {
+                    bullet->onCollisionPTime = 0;
+                    if (isCollision(anoPlayerColSphere, bulletColSphere) == false) {
+                        bullet->onCollisionEnter = false;
+                    }
+                }
+
+                if (isCollision(anoPlayerColSphere, bulletColSphere)) {
+                    bullet->onCollisionATime++;
+                    if (bullet->onCollisionATime == 1) {
+                        bullet->onCollisionEnter = true;
+                    }
+                } else {
+                    bullet->onCollisionATime = 0;
+                    if (isCollision(playerCollisionSphere, bulletColSphere) == false) {
+                        bullet->onCollisionEnter = false;
+                    }
+                }
+
+                if (bullet->GetShotTime() >= 10 && bullet->onCollisionEnter) {
+                    bullet->DirectionInverce();
+                    player_->SetDontAttack();
+                    collisionTime = 0;
+                }*/

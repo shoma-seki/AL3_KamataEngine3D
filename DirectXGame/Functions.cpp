@@ -69,7 +69,21 @@ Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
 	return result;
 }
 
-bool isCollision(const Sphere& s1, const Sphere& s2) { 
+Vector3 Lerp(const Vector3& startV, const Vector3& endV, float t) {
+	Vector3 result;
+	result.x = (1.0f - t) * startV.x + t * endV.x;
+	result.y = (1.0f - t) * startV.y + t * endV.y;
+	result.z = (1.0f - t) * startV.z + t * endV.z;
+	return result;
+}
+
+float EaseOutBack(float t) {
+	const float c1 = 1.70158f;
+	const float c3 = c1 + 1.0f;
+	return 1.0f + c3 * std::powf(t - 1.0f, 3.0f) + c1 * std::powf(t - 1.0f, 2.0f);
+}
+
+bool isCollision(const Sphere& s1, const Sphere& s2) {
 	if (Length(s1.center, s2.center) <= s1.radius + s2.radius) {
 		return true;
 	}
@@ -83,7 +97,7 @@ bool isCollision(const Sphere& s1, const Vector3& v) {
 	return false;
 }
 
-void DrawSphere(const Sphere& sphere,  unsigned int subdivision) {
+void DrawSphere(const Sphere& sphere, unsigned int subdivision) {
 	const unsigned int kSubdivision = subdivision;
 	const float kLonEvery = float(2.0 * M_PI / kSubdivision); // phi
 	const float kLatEvery = float(2.0 * M_PI / kSubdivision); // theta
@@ -114,18 +128,18 @@ void DrawSphere(const Sphere& sphere,  unsigned int subdivision) {
 			worldC.y = sphere.radius * (std::sin(lat)) + sphere.center.y;
 			worldC.z = sphere.radius * (std::cos(lat) * sin(lon + phiD)) + sphere.center.z;
 
-			//PrimitiveDrawer::GetInstance()->DrawLine3d(worldA, worldB, {1.0f, 1.0f, 1.0f, 1.0f});
-			//PrimitiveDrawer::GetInstance()->DrawLine3d(worldA, worldC, {1.0f, 1.0f, 1.0f, 1.0f});
+			// PrimitiveDrawer::GetInstance()->DrawLine3d(worldA, worldB, {1.0f, 1.0f, 1.0f, 1.0f});
+			// PrimitiveDrawer::GetInstance()->DrawLine3d(worldA, worldC, {1.0f, 1.0f, 1.0f, 1.0f});
 
 			//// ワールドマトリックス
-			//Matrix4x4 aWorldMatrix = MakeAffineMatrix({1, 1, 1}, {0, 0, 0}, worldA);
-			//Matrix4x4 bWorldMatrix = MakeAffineMatrix({1, 1, 1}, {0, 0, 0}, worldB);
-			//Matrix4x4 cWorldMatrix = MakeAffineMatrix({1, 1, 1}, {0, 0, 0}, worldC);
+			// Matrix4x4 aWorldMatrix = MakeAffineMatrix({1, 1, 1}, {0, 0, 0}, worldA);
+			// Matrix4x4 bWorldMatrix = MakeAffineMatrix({1, 1, 1}, {0, 0, 0}, worldB);
+			// Matrix4x4 cWorldMatrix = MakeAffineMatrix({1, 1, 1}, {0, 0, 0}, worldC);
 
 			//// スクリーンに変換
-			//screenA = RenderingPipeline({0, 0, 0}, aWorldMatrix, camera);
-			//screenB = RenderingPipeline({0, 0, 0}, bWorldMatrix, camera);
-			//screenC = RenderingPipeline({0, 0, 0}, cWorldMatrix, camera);
+			// screenA = RenderingPipeline({0, 0, 0}, aWorldMatrix, camera);
+			// screenB = RenderingPipeline({0, 0, 0}, bWorldMatrix, camera);
+			// screenC = RenderingPipeline({0, 0, 0}, cWorldMatrix, camera);
 
 			// 線を引く
 			/*Novice::DrawLine(int(screenA.v[0]), int(screenA.v[1]), int(screenB.v[0]), int(screenB.v[1]), color);

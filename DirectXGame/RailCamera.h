@@ -17,5 +17,5 @@ private:
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
-	Vector3 velocity_ = {0, 0, -0.1f};
+	Vector3 velocity_ = {0, 0, 0.3f};
 };

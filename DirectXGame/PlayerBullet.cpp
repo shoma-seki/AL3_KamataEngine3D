@@ -17,6 +17,9 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 void PlayerBullet::Update() {
 	shotTime_++;
 
+	if (speed_ > 1.001f) {
+		speed_ = 1.001f;
+	}
 	position_ = Add(position_, velocity_ * speed_);
 	worldTransform_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, position_);
 	if (--deathTimer_ <= 0) {

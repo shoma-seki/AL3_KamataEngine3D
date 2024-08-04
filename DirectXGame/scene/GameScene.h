@@ -17,6 +17,7 @@
 #include <string>
 #include "PrimitiveDrawer.h"
 #include "Spring.h"
+#include "Explosion.h"
 
 /// <summary>
 /// ゲームシーン
@@ -69,6 +70,11 @@ public: // メンバ関数
 	///  </summary>
 	void UpdateEnemyPopCommands();
 
+	///< summary>
+	/// 爆発させる
+	///  </summary>
+	void BulletExplosion();
+
 	void PopEnemy(Vector3 position);
 
 private: // メンバ変数
@@ -95,6 +101,8 @@ private: // メンバ変数
 	//プレイヤー
 	Player* player_ = nullptr;
 	AnotherPlayer* anotherPlayer = nullptr;
+	//爆発
+	std::list<Explosion*> explosion_;
 	//跳ね返しクラス
 	Spring* spring_ = nullptr;
 	//天球

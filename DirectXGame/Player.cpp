@@ -10,10 +10,10 @@ void Player::Initialize(Model* model, Model* bulletModel, uint32_t GH_, Vector3 
 	input_ = Input::GetInstance();
 	worldTransform3DReticle_.Initialize();
 	textureReticle = TextureManager::Load("./Resources./Reticle.png");
-	sprite2DReticle_ = Sprite::Create(textureReticle, {0, 0}, {256, 256, 256, 256}, {0.5f, 0.5f});
+	sprite2DReticle_ = Sprite::Create(textureReticle, {640, 360}, {256, 256, 256, 256}, {0.5f, 0.5f});
 }
 
-void Player::Update(const ViewProjection& viewProjection) {
+void Player::Update(const ViewProjection& viewProjection, const Vector3& AnoPlayerPosition) {
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -58,6 +58,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 		move.y += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed;
 	}
 
+	//画面外に行かないように
+
+
 	// 攻撃
 	Attack();
 	// 弾更新
@@ -75,7 +78,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	// 足されすぎないための処理
 	move = {0, 0, 0};
 
-	const float kDistancePlayerTo3DReticle = 70.0f;
+	const float kDistancePlayerTo3DReticle = 100.0f;
 	Vector3 offset = {0, 0, 1.0f};
 	offset = Multiply(offset, worldTransform_.matWorld_);
 	offset = Multiply(kDistancePlayerTo3DReticle, Normalize(offset));
@@ -113,12 +116,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 	Vector3 mouseDirection = Subtract(posFar, posNear);
 	mouseDirection = Normalize(mouseDirection);
 
-	const float kDistanceTestObject = 70;
+	const float kDistanceTestObject = 100;
 
-	// キーが押されたらレティクルの位置を固定
+	//キーが押されたらレティクルの位置を固定
 	if (input_->TriggerKey(DIK_E) || joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-		worldTransform3DReticle_.translation_ = GetWorldPosition();
-		worldTransform3DReticle_.translation_.z += 60;
+		/*worldTransform3DReticle_.translation_ = GetWorldPosition();
+		worldTransform3DReticle_.translation_.z += 60;*/
+		worldTransform3DReticle_.translation_ = AnoPlayerPosition;
 		worldTransform3DReticle_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, worldTransform3DReticle_.translation_);
 		Vector3 positionReticle = GetWorld3DReticlePosition();
 		Matrix4x4 matViewProjectionViewport = Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport));
@@ -130,6 +134,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		    isLocking_ = true;
 		}*/
 	}
+
 	worldTransform3DReticle_.translation_ = Add(posNear, Multiply(kDistanceTestObject, mouseDirection));
 	worldTransform3DReticle_.UpdateMatrix({1, 1, 1}, {0, 0, 0}, worldTransform3DReticle_.translation_);
 	/*if (isLocking_) {
@@ -184,31 +189,38 @@ void Player::DebugDraw() {
 
 void Player::Attack() {
 
+	XINPUT_STATE joyState;
+	if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
+		return;
+	}
+
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		bulletTime++;
+	} else {
+		isBulletOnce = true;
+		bulletTime = 0;
+	}
+
 	if (CanAttack_) {
-		if (input_->TriggerKey(DIK_SPACE)) {
-			Vector3 direction_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
-			direction_ = Normalize(direction_);
-			// velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
+		//if (input_->TriggerKey(DIK_SPACE)) {
+		//	Vector3 direction_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
+		//	direction_ = Normalize(direction_);
+		//	// velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);
 
-			PlayerBullet* newBullet = new PlayerBullet();
-			newBullet->Initialize(
-			    bulletModel_,
-			    {
-			        worldTransform_.matWorld_.m[3][0],
-			        worldTransform_.matWorld_.m[3][1],
-			        worldTransform_.matWorld_.m[3][2],
-			    },
-			    direction_);
-			bullets_.push_back(newBullet);
-		}
-
-		XINPUT_STATE joyState;
-		if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
-			return;
-		}
+		//	PlayerBullet* newBullet = new PlayerBullet();
+		//	newBullet->Initialize(
+		//	    bulletModel_,
+		//	    {
+		//	        worldTransform_.matWorld_.m[3][0],
+		//	        worldTransform_.matWorld_.m[3][1],
+		//	        worldTransform_.matWorld_.m[3][2],
+		//	    },
+		//	    direction_);
+		//	bullets_.push_back(newBullet);
+		//}
 
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			bulletTime++;
+			//bulletTime++;
 			Vector3 direction_ = Subtract(GetWorld3DReticlePosition(), GetWorldPosition());
 			direction_ = Normalize(direction_);
 			// velocity_ = TransformNormal(velocity_, worldTransform_.matWorld_);

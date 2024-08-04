@@ -22,6 +22,7 @@ public:
 	void Fire();
 	void Draw(ViewProjection& viewProjection);
 
+	bool IsAlive() { return isAlive; }
 	void SetPlayer(Player* player) { player_ = player; }
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
@@ -42,6 +43,7 @@ private:
 	Model* model_ = nullptr;
 	Model* bulletModel_ = nullptr;
 	uint32_t enemyGH_;
+	bool isAlive = true;
 	// 行動パターンフェーズ
 	Phase phase_ = Phase::Approach;
 
